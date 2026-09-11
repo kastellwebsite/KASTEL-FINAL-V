@@ -1400,8 +1400,12 @@
   flex-direction: column;
 }
 
+/* Colonne pour que le lien, en marge haute automatique, se cale au pied. */
 .news-bas {
   container-type: inline-size;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
 }
 
 /* Le plafond du visuel se mesure sur la carte, pas sur la fenêtre : en colonne
@@ -1422,9 +1426,10 @@
     grid-template-rows: subgrid;
   }
 
-  /* Le jeu se range ici, sous le lien, et non entre le visuel et lui. */
+  /* La rangée prend toute la hauteur que lui laisse la plus haute des
+   * cartes : le lien, calé en bas, s'aligne alors d'une carte à l'autre. */
   .news-bas {
-    align-self: start;
+    align-self: stretch;
   }
 }
 

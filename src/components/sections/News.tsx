@@ -89,10 +89,11 @@ export async function News() {
                 {post.excerpt}
               </p>
 
-              {/* Visuel et lien voyagent ensemble dans la même rangée : le
-                  lien colle au bas du visuel au lieu d'être renvoyé en pied de
-                  carte, et le jeu qui reste — les visuels n'ont pas tous la
-                  même hauteur — se range sous le lien, là où il ne troue rien. */}
+              {/* Visuel et lien voyagent ensemble dans la même rangée, et le
+                  lien est calé au pied de la carte : les visuels n'ont pas
+                  tous la même hauteur, et le jeu se range entre le visuel et
+                  le lien, pour que « Voir le post » soit à la même hauteur
+                  d'une carte à l'autre. */}
               <div className="news-bas">
                 {/* Le visuel du post quand il existe, l'aplat sinon : une carte
                     sans image reste une carte, elle ne se replie pas. */}
@@ -123,7 +124,7 @@ export async function News() {
                 )}
 
                 {lien ? (
-                  <span className="mt-[17px] block font-sans text-[13px] font-medium uppercase tracking-[0.1em] text-forest">
+                  <span className="mt-auto block pt-[17px] font-sans text-[13px] font-medium uppercase tracking-[0.1em] text-forest">
                     {news.postCta} <span aria-hidden>→</span>
                     <span className="sr-only"> (nouvelle fenêtre)</span>
                   </span>
