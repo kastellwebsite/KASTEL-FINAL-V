@@ -82,7 +82,7 @@ export function diagnostiquerCourriel() {
     );
   } else if (!EMAIL.test(de.email)) {
     anomalies.push(
-      `MAIL_EXPEDITEUR ne donne pas une adresse lisible (« ${de.email} »). Forme attendue : Kastell Conseil <bonjour@kastell-conseils.fr>, ou l'adresse seule.`,
+      `MAIL_EXPEDITEUR ne donne pas une adresse lisible (« ${de.email} »). Forme attendue : Kastell Conseil <lea.delamotte@kastell-conseils.fr>, ou l'adresse seule.`,
     );
   }
 

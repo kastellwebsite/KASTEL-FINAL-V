@@ -12,7 +12,7 @@ export const site = {
   /** Fiche du cabinet au répertoire des représentants d'intérêts. */
   hatvp: "https://www.hatvp.fr/fiche-organisation/?organisation=989630819",
   /** Domaine au pluriel depuis le changement de nom de domaine. */
-  email: "contact@kastell-conseils.fr",
+  email: "lea.delamotte@kastell-conseils.fr",
   city: "Lamballe, Bretagne",
   /** Page entreprise. */
   linkedin: "#",
