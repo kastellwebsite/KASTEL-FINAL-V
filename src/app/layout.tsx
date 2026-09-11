@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { BandeauApercu } from "@/components/BandeauApercu";
 import {
   DESCRIPTION_ACCUEIL,
@@ -101,6 +102,7 @@ export default function RootLayout({
         </a>
         <BandeauApercu />
         {children}
+        <Analytics />
       </body>
     </html>
   );
