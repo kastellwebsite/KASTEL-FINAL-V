@@ -191,6 +191,34 @@ ne peut pas envoyer un courriel tout seul, sans quoi il part en indésirable.
 `CONTACT_DESTINATAIRE` ne sert qu'à écrire ailleurs qu'à l'adresse de contact du
 site : à ne pas créer autrement, Vercel refusant une valeur vide.
 
+#### « Rien ne part » : diagnostiquer Brevo
+
+Le formulaire ne montre jamais la raison d'un refus, elle part dans les journaux
+Vercel. La route de diagnostic la rend lisible :
+
+```
+https://kastell-conseils.fr/api/diagnostic?secret=<REVALIDATE_SECRET>
+```
+
+Sa section `courriel` dit quelle clé ce déploiement voit, comment il lit
+`MAIL_EXPEDITEUR`, et nomme les anomalies. Avec `&courriel=test` en plus, elle
+tente un **envoi réel** à l'adresse de contact et affiche la réponse brute du
+service, traduite en cause probable.
+
+| Constat | Ce que ça veut dire |
+| --- | --- |
+| clé `absente` | variable absente de ce déploiement — l'ajouter puis **redéployer** : une variable ajoutée dans Vercel ne s'applique pas au déploiement en cours |
+| clé `xsmtpsib-…` | c'est la clé **SMTP** ; le site utilise l'API, il faut une clé `xkeysib-…` (Brevo → SMTP & API → Clés API) |
+| `401 Key not found` | clé incomplète, révoquée, ou clé SMTP |
+| `403 … not yet activated` | tout **nouveau compte Brevo** est bloqué pour l'envoi transactionnel tant que Brevo ne l'a pas activé — c'est indépendant de la validation de l'expéditeur ; demander l'activation (bandeau du tableau de bord ou support), en décrivant l'usage |
+| `400 … sender …` | `MAIL_EXPEDITEUR` n'est pas exactement une adresse validée chez Brevo, ou un domaine authentifié |
+| `envoyé` mais rien ne vient | regarder les indésirables, puis Brevo → Transactionnel → Journaux : Brevo y dit si la messagerie destinataire a refusé le message |
+
+Sans domaine authentifié (DKIM, DMARC), un expéditeur seulement « validé »
+part avec une réputation médiocre : le message arrive, mais souvent en
+indésirable. L'authentification du domaine se fait dans Brevo → Expéditeurs,
+domaines et IP dédiées → Domaines.
+
 À défaut de clé, `CONTACT_WEBHOOK_URL` prend le relais pour qui préfère un
 scénario Zapier ou Make. Charge utile :
 
@@ -526,7 +554,8 @@ https://kastell-conseils.fr/api/diagnostic?secret=<REVALIDATE_SECRET>
 
 Elle dit si la variable est présente sur ce déploiement, si WordPress répond,
 en combien de temps, et **combien d'éléments il voit dans chaque liste**. Il
-suffit de comparer ces nombres à ce qu'affiche le site.
+suffit de comparer ces nombres à ce qu'affiche le site. Sa section `courriel`
+fait de même pour l'envoi des courriels — voir « Rien ne part » plus haut.
 
 | Réponse | Ce que ça veut dire |
 | --- | --- |

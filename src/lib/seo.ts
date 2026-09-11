@@ -90,7 +90,7 @@ export const entite = {
   telephone: "+33660336838",
   telephoneAffiche: "+33 6 60 33 68 38",
   /** Adresse générale du cabinet. */
-  email: "contact@kastell-conseils.fr",
+  email: "lea.delamotte@kastell-conseils.fr",
   /** Adresse de la gérante, celle que citent les mentions légales. */
   emailDirection: "lea.delamotte@kastell-conseil.fr",
 

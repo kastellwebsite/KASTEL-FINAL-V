@@ -188,7 +188,7 @@ Kastell Conseil
 35 rue Docteur Calmette
 22400 Lamballe-Armor
 +33 6 60 33 68 38
-contact@kastell-conseils.fr
+lea.delamotte@kastell-conseils.fr
 ```
 
 Toute divergence entre ces trois endroits — une abréviation, un code postal
