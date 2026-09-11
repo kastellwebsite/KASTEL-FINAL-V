@@ -91,7 +91,9 @@ export async function POST(request: Request) {
         organisation ? `Organisation : ${organisation}` : null,
         `E-mail : ${email}`,
         telephone ? `Téléphone : ${telephone}` : null,
-        objet ? `Sujet : ${objet}` : null,
+        /* Toujours présent : une ligne absente se lit comme un oubli du site,
+           là où « non précisé » dit que le visiteur n'a rien choisi. */
+        `Sujet : ${objet || "non précisé"}`,
         "",
         message,
         "",
