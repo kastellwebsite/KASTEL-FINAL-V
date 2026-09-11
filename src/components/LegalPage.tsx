@@ -1,21 +1,27 @@
 import Link from "next/link";
+import { FilDAriane } from "@/components/FilDAriane";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { Reveal } from "@/components/Reveal";
 
-export type LegalBlock = { heading: string; body: string[] };
+/** Un paragraphe, ou une liste à puces quand les éléments s'énumèrent. */
+export type LegalLine = string | string[];
+export type LegalBlock = { heading: string; body: LegalLine[] };
 
 /**
  * Gabarit commun aux pages légales. Le contenu réel relève de l'éditeur du
- * site (immatriculation, hébergeur, DPO…) : les blocs à compléter sont
- * marqués entre crochets plutôt que remplis d'un texte inventé.
+ * site : ce qui reste à compléter est marqué entre crochets plutôt que rempli
+ * d'un texte inventé.
  */
 export function LegalPage({
   title,
+  chemin,
   intro,
   blocks,
 }: {
   title: string;
+  /** Adresse de la page, pour le fil d'Ariane. */
+  chemin: string;
   intro: string;
   blocks: LegalBlock[];
 }) {
@@ -24,7 +30,13 @@ export function LegalPage({
       <Header />
       <main id="contenu">
         <section className="shell pb-[clamp(40px,6vw,72px)] pt-[clamp(48px,8vw,104px)]">
-          <Reveal className="max-w-[70ch]">
+          <Reveal immediat className="max-w-[70ch]">
+            <FilDAriane
+              etapes={[
+                { nom: "Accueil", chemin: "/" },
+                { nom: title, chemin },
+              ]}
+            />
             <p className="eyebrow-tight mb-[clamp(18px,2.5vw,28px)]">
               Informations
             </p>
@@ -41,11 +53,24 @@ export function LegalPage({
                   <h2 className="m-0 mb-3 font-serif text-[clamp(22px,2.2vw,30px)] font-normal leading-[1.2] text-forest">
                     {block.heading}
                   </h2>
-                  {block.body.map((line, j) => (
-                    <p key={j} className="body-lg mb-3 last:mb-0">
-                      {line}
-                    </p>
-                  ))}
+                  {block.body.map((line, j) =>
+                    Array.isArray(line) ? (
+                      <ul
+                        key={j}
+                        className="m-0 mb-3 flex list-disc flex-col gap-[6px] pl-[22px] last:mb-0 marker:text-sage"
+                      >
+                        {line.map((item) => (
+                          <li key={item} className="body-lg">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p key={j} className="body-lg mb-3 last:mb-0">
+                        {line}
+                      </p>
+                    ),
+                  )}
                 </Reveal>
               ))}
             </div>

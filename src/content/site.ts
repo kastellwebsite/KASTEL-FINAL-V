@@ -1,10 +1,16 @@
+import { urlSite } from "@/lib/seo";
+
 export const site = {
   name: "Kastell Conseil",
-  /** Domaine de production — sert aussi à robots.txt, au sitemap et à l'OpenGraph. */
-  url: "https://kastell-conseils.fr",
+  /**
+   * Adresse canonique, définie une seule fois dans la configuration de
+   * référencement : le sitemap, robots.txt, les balises canoniques et
+   * l'Open Graph y puisent tous la même valeur.
+   */
+  url: urlSite,
   tagline: "Ancrage territorial, influence nationale",
-  /** Profil HATVP de Léa — à renseigner, lié depuis le pied de page. */
-  hatvp: "",
+  /** Fiche du cabinet au répertoire des représentants d'intérêts. */
+  hatvp: "https://www.hatvp.fr/fiche-organisation/?organisation=989630819",
   /** Domaine au pluriel depuis le changement de nom de domaine. */
   email: "contact@kastell-conseils.fr",
   city: "Lamballe, Bretagne",
@@ -48,6 +54,76 @@ export const vision = {
   ],
 } as const;
 
+/**
+ * Page pilier « lobbying territorial ».
+ *
+ * Le mot-clé principal du cabinet n'apparaissait nulle part sur le site. Cette
+ * page lui donne une adresse propre, où le terme est défini, la méthode
+ * exposée et les questions courantes traitées.
+ *
+ * Tout ce qui suit est tiré de ce que le cabinet dit déjà ailleurs — la
+ * section Vision, les six offres, le manifeste — reformulé pour répondre
+ * directement à une question. Aucun chiffre, aucun client, aucun délai n'a été
+ * ajouté : ce qui manque est signalé au cabinet plutôt qu'inventé.
+ */
+export const lobbying = {
+  eyebrow: "Page de référence",
+  title: "Le lobbying territorial",
+  /** Réponse directe sous le titre : c'est elle qu'un moteur cite. */
+  chapo:
+    "Le lobbying territorial consiste à défendre les intérêts d'une entreprise ou d'une organisation auprès des décideurs publics depuis son territoire d'implantation, plutôt que depuis les seuls centres de décision nationaux.",
+  misAJour: "2026-09-11",
+  sections: [
+    {
+      titre: "Qu'est-ce que le lobbying territorial ?",
+      reponse:
+        "C'est la représentation d'intérêts exercée au plus près du terrain : auprès des collectivités, des services déconcentrés de l'État et des parlementaires d'un territoire, en articulation avec le niveau national.",
+      paragraphes: [
+        "La représentation d'intérêts est une activité encadrée. En France, elle est inscrite au répertoire tenu par la Haute Autorité pour la transparence de la vie publique, qui rend publiques les actions menées auprès des responsables publics. Le lobbying territorial ne déroge pas à ce cadre : il en applique les règles à l'échelle régionale.",
+        "Ce qui le distingue n'est donc pas la méthode, mais le point de départ. Un dossier industriel breton se comprend d'abord en Bretagne — auprès de ceux qui en mesurent les effets sur l'emploi, le foncier ou l'eau — avant de se plaider à Paris.",
+      ],
+    },
+    {
+      titre: "Pourquoi il ne se pratique plus seulement à Paris",
+      reponse:
+        "Parce que les centres de décision se sont diversifiés : régions, métropoles et agences publiques arbitrent aujourd'hui une part croissante de ce qui conditionne l'activité des entreprises.",
+      paragraphes: [
+        "L'économie française se construit dans les territoires, et les décisions qui en dessinent l'avenir se prenaient longtemps ailleurs. Influencer la décision publique signifiait être à Paris ou à Bruxelles, héritage d'un modèle centralisé.",
+        "À mesure que la décision se déconcentre, l'influence doit se rapprocher du terrain. C'est la raison d'être d'un cabinet installé en Bretagne plutôt qu'une antenne régionale d'un cabinet parisien : la connaissance du territoire ne se délègue pas.",
+      ],
+    },
+  ],
+  faq: [
+    {
+      question: "Le lobbying territorial est-il légal ?",
+      reponse:
+        "Oui. La représentation d'intérêts est une activité encadrée par la loi. Kastell Conseil est inscrit au répertoire des représentants d'intérêts tenu par la Haute Autorité pour la transparence de la vie publique (HATVP), qui rend publiques les actions menées auprès des responsables publics.",
+    },
+    {
+      question: "Quelle différence avec le lobbying classique ?",
+      reponse:
+        "La méthode est la même ; le point de départ change. Le lobbying territorial part du territoire où se trouve l'entreprise et remonte vers le niveau national, au lieu de partir de Paris pour redescendre. Il suppose de connaître les acteurs locaux — collectivités, services de l'État, parlementaires du territoire — autant que les circuits nationaux.",
+    },
+    {
+      question: "Sur quels territoires Kastell Conseil intervient-il ?",
+      reponse:
+        "Le cabinet est installé à Lamballe-Armor, dans les Côtes-d'Armor, et intervient dans toute la Bretagne — Rennes, Saint-Brieuc, Brest, Vannes — ainsi qu'à Paris et Bruxelles lorsque le dossier l'exige.",
+    },
+    {
+      question: "Faut-il être une grande entreprise pour y recourir ?",
+      reponse:
+        "Non. Les PME et ETI sont souvent les plus exposées à une décision publique et les moins outillées pour la suivre. Un cabinet installé en région leur donne accès à un accompagnement qui restait jusqu'ici réservé aux grands groupes parisiens.",
+    },
+    {
+      question: "Comment se déroule un premier échange ?",
+      reponse:
+        "Un entretien de trente minutes suffit le plus souvent à cerner l'enjeu et à dire si une intervention a du sens. Il se demande par le formulaire de contact du site ou par courriel, et il est sans engagement.",
+    },
+  ],
+  ctaOffres: "Voir les six terrains d'intervention",
+  ctaContact: "Parler de votre dossier",
+} as const;
+
 export const nav = [
   { label: "Notre vision", href: "/#vision" },
   { label: "Offres", href: "/offres" },
@@ -64,8 +140,7 @@ export const offersSection = {
   backLabel: "Retour",
   backCta: "Revenir à l'accueil",
   /** Libellé et préfixe d'objet du courriel de prise de rendez-vous. */
-  diagnosticCta: "Prendre rendez-vous pour un pré-diagnostic",
-  diagnosticSubject: "Pré-diagnostic",
+  offreCta: "En savoir plus",
   bulletsHeading: "Ce que Kastell fait pour vous",
 } as const;
 
@@ -236,26 +311,75 @@ export const publications = [
     href: "https://www.linkedin.com/feed/update/urn:li:activity:7427385529794527232/",
     cta: "Voir le post LinkedIn",
   },
-  {
-    label: "Manifeste",
-    title: "Réseau Influence & Territoires",
-    context:
-      "La décision publique reste très concentrée à Paris, créant une déconnexion avec les territoires où se déroule l'essentiel de l'activité économique et sociale — plus de 80 % des emplois privés. Plutôt que d'opposer Paris et les régions, le Réseau Influence & Territoires, collectif apartisan de consultants et de cabinets implantés en région, entend fluidifier le dialogue entre le niveau national et les réalités de terrain.",
-    objectives: [
-      "Valoriser l'expertise des professionnels des affaires publiques basés en territoires.",
-      "Structurer la profession via le partage d'outils, de méthodes et de retours d'expérience.",
-      "Rendre l'offre lisible pour les acteurs économiques locaux : PME, ETI, fédérations.",
-      "Porter une voix collective pour faire remonter les enjeux territoriaux dans les processus de décision nationaux.",
-    ],
-    /* URL publique : le lien fourni pointait vers l'espace d'administration. */
-    href: "https://www.linkedin.com/company/115801577/",
-    cta: "Suivre le RIT sur LinkedIn",
-  },
 ] as const;
+
+/* Le champ `destination` d'une publication, renseigné dans le CMS, renvoie vers
+   une section du site plutôt que vers une adresse extérieure. */
+
+/**
+ * Le manifeste du RIT occupe sa propre bande en fin de page : le texte est trop
+ * long pour la colonne « Nos publications », et le document mérite d'être
+ * présenté comme tel, couverture à l'appui.
+ *
+ * `coverUrl` reste vide tant qu'aucun visuel n'est téléversé : la couverture est
+ * alors composée dans la page à partir de `cover`, avec les fontes du site.
+ */
+export const manifesto = {
+  eyebrow: "Manifeste",
+  title: "Réseau Influence & Territoires",
+  intro:
+    "La décision publique reste très concentrée à Paris, créant une déconnexion avec les territoires où se déroule l'essentiel de l'activité économique et sociale. Plutôt que d'opposer Paris et les régions, le Réseau Influence & Territoires, collectif apartisan de consultants et de cabinets implantés en région, entend fluidifier le dialogue entre le niveau national et les réalités de terrain, pour rendre l'action publique plus efficace.",
+  objectivesHeading: "Quatre objectifs",
+  objectives: [
+    "Valoriser l'expertise des professionnels des affaires publiques basés en territoires.",
+    "Structurer la profession via le partage d'outils, de méthodes et de retours d'expérience.",
+    "Rendre l'offre lisible pour les acteurs économiques locaux : PME, ETI, fédérations.",
+    "Porter une voix collective pour faire remonter les enjeux territoriaux dans les processus de décision nationaux.",
+  ],
+  /* Repris mot pour mot du texte fourni : aucune mention ajoutée. */
+  tags: ["Apartisan", "Consultants en région"],
+  cta: "Suivre le RIT sur LinkedIn",
+  /* URL publique : le lien fourni pointait vers l'espace d'administration. */
+  href: "https://www.linkedin.com/company/115801577/",
+  coverUrl: "",
+  /**
+   * Téléchargement contre adresse e-mail. Le bouton n'apparaît que si le
+   * document existe : soit `public/documents/manifeste-rit.pdf` dans le dépôt,
+   * soit un fichier téléversé depuis le studio, qui prend alors le dessus.
+   */
+  download: {
+    cta: "Télécharger le manifeste",
+    /* Chemin sous public/, sans extension. */
+    file: "documents/manifeste-rit",
+    fileUrl: "",
+    modalTitle: "Recevoir le manifeste",
+    modalIntro:
+      "Indiquez votre adresse e-mail : le document se télécharge aussitôt et nous vous tiendrons informé des travaux du réseau.",
+    emailLabel: "Adresse e-mail professionnelle",
+    consent:
+      "J'accepte que Kastell Conseil conserve mon adresse pour m'adresser ses publications. Je peux me désinscrire à tout moment.",
+    submit: "Recevoir le document",
+    submitting: "Envoi…",
+    success: "Merci, le téléchargement démarre.",
+    error: "L'envoi n'a pas abouti. Réessayez ou écrivez-nous directement.",
+    privacyNote: "Vos données ne sont ni revendues ni transmises à des tiers.",
+    privacyLink: "Politique de confidentialité",
+  },
+  cover: {
+    lines: ["Réseau", "Influence", "& Territoires"],
+    subtitle:
+      "Collectif apartisan de consultants\nen affaires publiques implantés\nen région",
+    mark: "RIT",
+  },
+} as const;
 
 export const about = {
   eyebrow: "Présidente fondatrice",
   pressHeading: "Dans la presse",
+  pressPlus: "Voir toutes les retombées",
+  pressMoins: "Réduire",
+  publicationsPlus: "Voir toutes les publications",
+  publicationsMoins: "Réduire",
   publicationsHeading: "Nos publications",
   portraitPlaceholder: ["portrait — présidente fondatrice", "(photo professionnelle, format 4:5)"],
 } as const;
@@ -263,7 +387,8 @@ export const about = {
 export const references = {
   eyebrow: "Références",
   title: "Ils nous confient leurs enjeux publics",
-  freeSlot: "emplacement disponible — cas client ou témoignage à venir",
+  temoignageLire: "Lire le témoignage complet",
+  temoignageReduire: "Réduire",
 } as const;
 
 export const news = {
@@ -280,6 +405,47 @@ export const contact = {
     "Un premier échange de trente minutes suffit souvent à clarifier une stratégie.",
   mailCta: "Nous contacter par mail",
   linkedinCta: "Nous contacter sur LinkedIn",
+  /** Bande de fin de page d'accueil : une invitation, pas un formulaire. */
+  bande: {
+    title: "Un premier échange ?",
+    intro:
+      "Trente minutes suffisent souvent à y voir clair sur un dossier. Écrivez-nous, nous vous répondrons sous 48h.",
+    cta: "Nous contacter",
+  },
+  /** En-tête de la page dédiée. */
+  page: {
+    eyebrow: "Contact",
+    title: "Nous contacter",
+    intro:
+      "Décrivez votre situation en quelques lignes : nous revenons vers vous sous un jour ouvré pour convenir d'un premier échange.",
+  },
+  /** Libellés du formulaire. */
+  form: {
+    heading: "Écrire au cabinet",
+    nom: "Nom et prénom",
+    organisation: "Organisation",
+    organisationAide: "Facultatif",
+    email: "Adresse e-mail",
+    telephone: "Téléphone",
+    telephoneAide: "Facultatif",
+    objet: "Votre sujet",
+    objetDefaut: "Je ne sais pas encore",
+    objetAutre: "Autre sujet",
+    message: "Votre besoin en quelques lignes",
+    consentement:
+      "J'accepte que Kastell Conseil traite ces informations pour répondre à ma demande.",
+    envoyer: "Envoyer le message",
+    envoi: "Envoi…",
+    succes:
+      "Message reçu. Léa de Lamotte vous répond en général dans la journée ouvrée.",
+    erreur:
+      "L'envoi n'a pas abouti. Écrivez-nous directement, votre message est conservé ci-dessous.",
+    indisponible:
+      "Le formulaire n'est pas encore relié à une boîte de réception. Écrivez-nous directement — votre message est repris dans le courriel.",
+    replierMail: "Ouvrir mon logiciel de messagerie",
+    confidentialite: "Politique de confidentialité",
+    obligatoire: "Champs obligatoires",
+  },
 } as const;
 
 export const footer = {
@@ -329,6 +495,5 @@ export const posts = [
 export const legal = [
   { label: "Mentions légales", href: "/mentions-legales" },
   { label: "Politique de confidentialité", href: "/confidentialite" },
-  { label: "Politique de cookies", href: "/cookies" },
   { label: "LinkedIn", href: site.linkedin },
 ] as const;

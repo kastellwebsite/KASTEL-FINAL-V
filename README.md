@@ -30,11 +30,14 @@ sortie `.next`.
 ## Structure
 
 ```
-src/app/            routes (/ et /missions) + layout et styles globaux
-src/components/     Header, Footer, Reveal
+src/app/            routes (/, /offres, /contact) + layout et styles globaux
+src/components/     Header, Footer, Reveal, modale de téléchargement
 src/components/sections/   sections de la page d'accueil
-src/content/site.ts textes, navigation, missions, témoignages, posts
-public/brand/       logos et marque (PNG d'origine)
+src/content/site.ts textes de repli : tout le rédactionnel du site
+src/cms/            lecture WordPress et fusion avec le contenu du dépôt
+public/brand/       logos et marque
+public/documents/   documents téléchargeables
+wordpress/          extension WordPress : modèle de contenu et route REST
 ```
 
 Les valeurs de la maquette (couleurs, `clamp()`, interlignages) sont
@@ -118,20 +121,178 @@ elle est listée dans `images.qualities` de `next.config.mjs` ; sans cela le
 
 ### Palette et vert clair
 
-Le vert clair de la charte est décliné en trois rôles, chacun vérifié par la
+Le vert pousse de la charte est décliné en trois rôles, chacun vérifié par la
 mesure plutôt que choisi à l'œil :
 
 | Jeton | Valeur | Rôle | Contraste |
 | --- | --- | --- | --- |
-| `accent` | `#8BB19F` | décoratif, et texte sur les bandeaux vert foncé | 6,42:1 sur `#192924` |
-| `sage` | `#4B7662` | texte d'accent sur fond clair | 4,90 sur bone, 4,50 sur sable |
-| `accent-tint` | `#EEF4F1` | fond de bande | texte forêt à 13,6:1 |
+| `accent` | `#73C167` | décoratif, et texte sur les bandeaux vert foncé | 6,90:1 sur `#192924` |
+| `sage` | `#35752B` | texte d'accent sur fond clair | 5,35 sur bone, 4,91 sur sable, 5,17 sur la teinte |
+| `accent-tint` | `#F1F7F0` | fond de bande | texte forêt à 13,93:1 |
 
-`#4B7662` est **le plus clair** qui passe encore AA en texte sur les deux fonds
-clairs du site : le monter davantage ferait passer les intitulés de section sous
-le seuil. Le vert apparaît sur la bande « Notre vision », les bandes alternées
-de la page Offres, les puces des prestations, les filets de section et les
-survols. Le bandeau LinkedIn garde le sable, pour ne pas verdir toute la page.
+La méthode compte autant que les valeurs : un vert plus vif est plus proche du
+fond clair, la saturation coûte donc du contraste. On ne choisit pas une couleur
+puis on espère — on pose la teinte et la saturation voulues, et on **cherche la
+clarté** qui satisfait le seuil. C'est ce qui donne le vert le plus lumineux
+possible sans descendre sous la limite de lisibilité.
+
+Le vert apparaît sur la bande « Notre vision », les bandes alternées de la page
+Offres, la bande du manifeste, les puces des prestations, les filets de section
+et les survols. Le bandeau LinkedIn garde le sable, pour ne pas verdir toute la
+page.
+
+### Couverture du manifeste
+
+La bande « Manifeste » en fin de page d'accueil affiche une couverture de
+document. Tant qu'aucun fichier n'est fourni, elle est **composée dans la page**
+à partir de `manifesto.cover` : bloc vert foncé, titre en Instrument Serif,
+motif cartographique, marque « RIT ». Elle hérite donc des fontes du site, reste
+nette à toute résolution et ne coûte aucun octet de plus.
+
+Ses proportions sont pilotées par des unités de conteneur (`cqw`), pas par la
+largeur de fenêtre : la couverture est identique dans la colonne du bureau et
+une fois la grille repliée sur mobile. Attention si vous la retouchez — un
+conteneur ne peut pas s'interroger lui-même, sa propre marge intérieure doit
+donc rester en pourcentage (`padding: 5.5%`), sans quoi les `cqw` retombent sur
+la fenêtre et divisent toutes les tailles filles.
+
+Pour poser une vraie couverture : téléverser l'image dans WordPress (À propos →
+« Manifeste — couverture »), ou renseigner `manifesto.coverUrl`.
+Format conseillé : portrait, environ 1000 × 1414 px.
+
+### Page de contact
+
+Le formulaire vit sur `/contact`, pas en bas de la page d'accueil. En fin d'une
+page déjà longue, il demandait un effort au moment où le visiteur en a le moins.
+L'accueil et la page Offres se terminent sur une invitation courte —
+`ContactBande` — qui mène à la page et laisse l'adresse en clair pour qui
+préfère écrire directement.
+
+`Contact` accepte `titre={false}` : sur la page dédiée, le `<h1>` porte déjà le
+propos, et le répéter créerait deux titres pour une même chose.
+
+### Formulaire de contact
+
+`POST /api/contact` valide la saisie, exige le consentement, écarte les robots
+par un champ leurre et limite le débit à quatre demandes par minute et par IP,
+puis **envoie un courriel** au cabinet.
+
+L'adresse du visiteur est placée en **champ de réponse** : le cabinet répond
+depuis sa boîte sans rien recopier. C'est le détail qui compte à l'usage. Un
+accusé de réception part au visiteur dans la foulée, au mieux — son échec ne
+doit pas faire croire à une demande perdue, elle est déjà partie.
+
+Deux services sont reconnus, choisis par la clé présente : `BREVO_API_KEY`
+(français, hébergement européen) ou `RESEND_API_KEY`. Les prendre tous les deux
+évite de figer le choix dans le code. `MAIL_EXPEDITEUR` doit appartenir à un
+domaine **authentifié** chez le service, sinon l'envoi est refusé : un serveur
+ne peut pas envoyer un courriel tout seul, sans quoi il part en indésirable.
+
+`CONTACT_DESTINATAIRE` ne sert qu'à écrire ailleurs qu'à l'adresse de contact du
+site : à ne pas créer autrement, Vercel refusant une valeur vide.
+
+À défaut de clé, `CONTACT_WEBHOOK_URL` prend le relais pour qui préfère un
+scénario Zapier ou Make. Charge utile :
+
+```json
+{ "nom": "…", "email": "…", "organisation": "…", "telephone": "…",
+  "objet": "…", "message": "…", "date": "…", "source": "…" }
+```
+
+**Il n'y a ici aucun repli acceptable côté serveur** : contrairement au
+téléchargement du manifeste, une demande perdue est un client perdu. Quand la
+destination n'est pas configurée (501) ou que le relais échoue (502), la route
+le dit franchement et le formulaire propose au visiteur d'**ouvrir son logiciel
+de messagerie avec le message déjà rédigé**, saisie conservée à l'écran. Le
+visiteur repart toujours avec un moyen d'aboutir, jamais avec l'illusion que
+c'est parti.
+
+La liste des sujets est alimentée par les intitulés des offres : un visiteur qui
+vient de les lire retrouve les mêmes mots, et la demande arrive qualifiée.
+
+### Visuels de la médiathèque
+
+`remotePatterns` est déduit de `WORDPRESS_API_URL` : un seul réglage, pas deux à
+tenir en accord. Certains hébergements servent pourtant la médiathèque depuis un
+autre domaine — un CDN, un sous-domaine. `MEDIA_HOSTS` permet alors de les
+déclarer, séparés par des virgules, sans repasser par le code. Sans cela
+l'optimiseur refuse l'image et le visiteur voit une vignette cassée, sans
+qu'aucune erreur n'apparaisse dans les journaux du site.
+
+En développement, l'optimiseur refuse de toute façon les hôtes locaux
+(`dangerouslyAllowLocalIP`, faux par défaut depuis Next 16) : une image servie
+depuis `localhost` renvoie 400 même correctement déclarée. C'est une garde de
+l'outil, pas un défaut de configuration.
+
+### Publications : lien externe ou section du site
+
+Une publication porte deux champs de destination. « …ou vers une section du
+site » l'emporte sur l'adresse extérieure : c'est un choix explicite, là où le
+champ d'adresse peut n'avoir jamais été vidé.
+
+`estInterne()` (`src/lib/lien.ts`) décide du rendu. Une ancre ou un chemin
+s'ouvrent dans le même onglet, par la navigation interne, avec une flèche vers
+le bas ; une adresse extérieure s'ouvre à côté, flèche oblique et mention pour
+les lecteurs d'écran. Confondre les deux donne soit un onglet de trop pour aller
+à la section d'en dessous, soit un site quitté sans prévenir.
+
+### Liens non renseignés
+
+Les URL encore inconnues sont notées `#` dans le contenu. `estUtile()`
+(`src/lib/lien.ts`) sert à ne pas les rendre : un bouton vers `#` ne fait rien
+sinon remonter la page, et le visiteur croit à une panne.
+
+Trois boutons LinkedIn et les cartes d'actualités en dépendaient. Ils
+apparaissent dès que `site.linkedin`, `site.linkedinProfile` et les liens de
+`posts` portent de vraies adresses — sans quoi la carte d'actualité reste une
+carte, et le bouton n'existe pas.
+
+### Téléchargement du manifeste contre adresse e-mail
+
+Le bouton « Télécharger le manifeste » n'apparaît **que si le document
+existe** : `public/documents/manifeste-rit.pdf` dans le dépôt, ou un fichier
+téléversé depuis WordPress (À propos → « Manifeste — document à télécharger »),
+qui prend alors le dessus. Sans document, la bande garde son seul lien LinkedIn
+— mieux vaut pas de bouton qu'un bouton qui tombe sur un 404.
+
+Le formulaire ouvre une `<dialog>` native : le navigateur y assure le piège à
+focus, la touche Échap, l'inertie de l'arrière-plan et le retour du focus sur le
+bouton d'ouverture, ce qu'une réimplémentation manuelle rate presque toujours.
+
+`POST /api/manifeste` valide l'adresse, exige le consentement, écarte les robots
+par un champ leurre, limite le débit par IP, puis relaie l'adresse vers
+`MANIFESTE_WEBHOOK_URL` — n'importe quel service acceptant un POST JSON
+(Zapier, Make, Brevo, n8n). Charge utile :
+
+```json
+{ "email": "…", "document": "Manifeste Réseau Influence & Territoires", "date": "…" }
+```
+
+Sans cette variable d'environnement, l'adresse est seulement journalisée et le
+document est servi quand même : une intégration absente ne prive jamais un
+visiteur du document, et le relais en panne non plus.
+
+Le fichier est servi par `/api/manifeste/fichier`, jamais par l'adresse du CMS.
+Deux raisons : l'attribut `download` est **ignoré dès que le fichier vient d'un
+autre domaine** — le PDF s'ouvrirait alors dans un onglet au lieu de descendre
+dans les téléchargements — et l'adresse du back-office n'a pas à s'afficher dans
+la barre d'adresse. Le relais ajoute un `Content-Disposition: attachment`, que
+le navigateur honore sans discuter.
+
+**Ce que ce formulaire ne fait pas.** Le relais ne contrôle rien : une fois son
+adresse connue, elle est publique et partageable. C'est le compromis habituel de
+ce type de formulaire, et il est assumé — l'objectif est de qualifier des
+contacts, pas de protéger un document par ailleurs diffusé. Pour un vrai verrou,
+il faudrait un jeton signé à durée limitée.
+
+La limitation de débit (5 demandes par minute et par IP) vit en mémoire de
+l'instance : sur une plateforme sans état elle ne survit pas au recyclage. C'est
+un garde-fou de première ligne, pas une protection anti-abus.
+
+Le traitement est décrit dans la page « Politique de confidentialité »
+(finalité, base légale — le consentement —, destinataires, durée). Ces
+rubriques comportent encore des crochets à compléter : prestataire d'envoi
+retenu et durées de conservation.
 
 ### Logos des médias (presse)
 
@@ -201,73 +362,222 @@ la mise en page, et la hauteur de chaque section reste identique à l'artboard.
 `prefers-reduced-motion: reduce` les neutralise toutes, y compris la dérive du
 filigrane du héros.
 
-## CMS (Sanity)
+## CMS (WordPress headless)
 
-Léa modifie le contenu, jamais le code. Le studio est hébergé par Sanity sur
-une URL dédiée : elle s'y connecte par e-mail, remplit des formulaires en
-français et clique sur **Publier**.
+WordPress ne sert **aucune page**. Il sert des données, que Next va chercher au
+build et à la revalidation, puis rend en HTML statique sur Vercel. Google, les
+crawlers d'IA et les visiteurs ne voient jamais WordPress.
 
-> Le studio n'est pas servi par Next : Sanity 6 ne se compile ni avec Turbopack
-> ni avec webpack à l'intérieur de Next 16. L'hébergement Sanity est gratuit,
-> officiel, et évite d'embarquer un back-office dans le site vitrine.
+```
+WordPress (back-office)  ──▶  /wp-json/kastell/v1/contenu  ──▶  Next sur Vercel  ──▶  HTML
+        ▲                                                            │
+        └──────────── webhook /api/revalidate ◀──────────────────────┘
+```
 
-### Mise en route (une seule fois, sans terminal)
+L'extension qui fait tout ce travail est dans `wordpress/kastell-contenu/` :
+elle déclare le modèle de contenu, fabrique l'administration et expose une route
+d'agrégation. Voir son `LISEZ-MOI.md` pour l'installation.
 
-`sanity login` et `sanity deploy` exigent un terminal. Le studio se construit
-aussi en statique (`npm run studio:build`), donc **Vercel peut le déployer comme
-n'importe quel site** — tout se fait depuis le navigateur, avec les deux outils
-déjà en place.
+### Le contrat entre les deux moitiés
 
-1. **Projet Sanity** — sur [sanity.io/manage](https://sanity.io/manage),
-   *Create new project*, dataset `production`. Relever l'identifiant (`Project ID`).
-2. **Studio sur Vercel** — nouveau projet Vercel, **même dépôt GitHub** :
-   - Framework preset : `Other`
-   - Build command : `npm run studio:build`
-   - Output directory : `dist`
-   - Variables : `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_DATASET=production`
+La route WordPress rend **exactement l'enveloppe** que produisait auparavant la
+requête Sanity — `parametres`, `accueil`, `offres`, `apropos`, `piedDePage`,
+avec les mêmes noms de champs. C'est ce qui a permis de changer de back sans
+toucher une ligne des composants : seule la couche de lecture a changé, la
+fusion (`src/cms/content.ts`) est restée identique.
 
-   L'URL obtenue est le lien à donner à Léa.
-3. **CORS** — dans Sanity, *API → CORS origins*, ajouter l'URL du studio avec
-   *Allow credentials*. Sans cette étape le studio s'affiche mais reste vide :
-   le navigateur bloque ses appels à l'API.
-4. **Léa** — *Members → Invite*, rôle **Editor** (pas Administrator : inutile
-   qu'elle puisse supprimer le dataset).
-5. **Site** — dans le projet Vercel existant, ajouter
-   `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET=production` et
-   `SANITY_REVALIDATE_SECRET` (`openssl rand -hex 32`), puis redéployer.
-6. **Webhook** *(optionnel)* — Sanity *API → Webhooks*, URL
-   `https://<domaine>/api/revalidate`, méthode POST, en-tête
-   `x-kastell-secret` valant le même secret. Sans lui les modifications
-   apparaissent en moins d'une minute ; avec lui, immédiatement.
+Ce contrat est aussi ce qu'il faut respecter si le back change encore.
 
-> Le build du studio recopie `public/` dans sa sortie, soit ~7 Mo d'images du
-> site embarquées pour rien. Sans conséquence — c'est un déploiement séparé —
-> mais ça alourdit ses builds.
+### Mise en route
 
-### Tant que rien n'est branché
+1. **Installer WordPress** sur un hébergement mutualisé ou managé. Idéalement un
+   sous-domaine discret : `admin.kastell-conseils.fr`.
+2. **Déposer l'extension** — copier `wordpress/kastell-contenu/` dans
+   `wp-content/plugins/`, puis l'activer. Aucune autre extension n'est requise :
+   ni ACF, ni WPGraphQL.
+3. **Renseigner la liaison** dans l'administration : *Contenu du site*, en bas
+   de page, l'adresse du site public et le secret partagé (`openssl rand -hex
+   32`, la même valeur que `REVALIDATE_SECRET` côté Vercel).
 
-`isSanityConfigured` est faux sans identifiant de projet : le site sert le
-contenu de `src/content/site.ts`. **Rien ne casse avant la mise en route, et
-rien ne casse non plus si Sanity devient injoignable** — `getContent()` rattrape
-l'erreur et retombe sur le dépôt.
+   Aucun fichier à modifier. Les constantes `KASTELL_SITE_URL` et
+   `KASTELL_SECRET` de `wp-config.php` restent reconnues et gardent la
+   priorité, pour un hébergement qui préfère sortir le secret de la base.
 
-La fusion se fait **champ par champ** : une fiche à moitié remplie dans le
-studio ne vide aucune rubrique, ce qui permet de basculer progressivement.
+4. **Créer le compte de Léa** — rôle **Éditeur**, pas Administrateur.
+5. **Côté Vercel** — ajouter `WORDPRESS_API_URL` (l'adresse WordPress, sans
+   barre oblique finale) et `REVALIDATE_SECRET` (la même valeur que
+   `KASTELL_SECRET`), puis redéployer.
+
+Vérification : `https://<wordpress>/wp-json/kastell/v1/contenu` doit rendre du
+JSON. Si oui, le site le lit.
 
 ### Ce que voit Léa
 
-Cinq rubriques, dans l'ordre du site, sans bouton « créer » ni liste à
-parcourir : Paramètres du site, Page d'accueil, Offres, À propos, Pied de page.
-Les schémas sont dans `src/sanity/schema.ts` ; leurs intitulés sont les
-étiquettes qu'elle lit.
+Un menu unique, **Contenu du site**, et rien d'autre. Articles, Pages,
+Commentaires et Tableau de bord sont retirés pour tout le monde : cette
+installation ne sert aucune page, et les laisser revient à offrir d'écrire un
+article à côté d'« Actualités LinkedIn » sans qu'il apparaisse jamais.
+
+La première page est une **vue d'ensemble** : une carte par rubrique, ce qu'elle
+alimente sur le site, le nombre d'éléments pour les listes. C'est là qu'arrive
+un compte Éditeur après connexion.
+
+Les cinq rubriques uniques mènent droit à leur formulaire. Les listes se
+réordonnent en **déplaçant les lignes** à la souris. Chaque écran porte un
+rappel de ce qu'il alimente, et le champ titre porte le nom de ce qu'il contient
+vraiment — « Nom du client », « Titre de l'article » — jamais le « Saisir le
+titre » de WordPress.
+
+Les listes de texte (paragraphes, prestations, objectifs) se saisissent **une
+ligne par élément** : WordPress n'a pas de champ répétable sans extension
+payante, et une ligne par élément se comprend sans explication.
+
+### Récupérer les textes du site
+
+Un back-office vide est indéchiffrable : on ne peut pas modifier un texte qu'on
+ne voit pas. Le bouton **Récupérer les textes du site**, sur la vue d'ensemble,
+verse dans WordPress tout ce que `src/content/site.ts` contient déjà.
+
+Le fichier `wordpress/kastell-contenu/contenu-initial.json` est **généré**, pas
+écrit à la main :
+
+```bash
+npx tsc src/content/site.ts --outDir .tmp-contenu --target es2022 \
+  --module esnext --moduleResolution bundler
+node outils/generer-contenu-initial.mjs .tmp-contenu/site.js
+```
+
+À relancer si les textes du dépôt changent avant la mise en route de WordPress.
+
+L'import ne remplit qu'un champ vide et n'alimente qu'une liste vide : le
+relancer ne peut rien écraser, et sert à compléter après coup.
+
+Le modèle est déclaré une seule fois, dans `wordpress/kastell-contenu/inc/schema.php` :
+l'administration, l'enregistrement et la route REST en dérivent tous. Ajouter un
+champ là-bas suffit à le voir apparaître partout.
+
+### Tant que rien n'est branché
+
+`isWordPressConfigured` est faux sans `WORDPRESS_API_URL` : le site sert le
+contenu de `src/content/site.ts`. **Rien ne casse avant la mise en route, et
+rien ne casse non plus si WordPress devient injoignable** — `getContent()`
+rattrape l'erreur, journalise et retombe sur le dépôt. Vérifié : WordPress
+éteint, le build passe et la page répond 200 avec le contenu du dépôt.
+
+La fusion se fait **champ par champ** : une fiche à moitié remplie ne vide
+aucune rubrique. Vérifié aussi : avec un WordPress où un seul champ est
+renseigné, ce champ est repris et tout le reste — les six offres, la biographie,
+la presse, le manifeste, le pied de page — reste celui du dépôt.
+
+### Voir une modification sans attendre
+
+Le site est servi en pages pré-rendues, rafraîchies chaque minute. C'est ce qui
+le rend rapide et robuste, mais cela impose d'attendre pour constater l'effet
+d'une modification. Deux mécanismes s'en chargent :
+
+**Le bouton « Mettre le site à jour »**, sur la vue d'ensemble et en haut de
+chaque écran d'administration. Il est toujours affiché, désactivé et accompagné
+du formulaire à remplir quand la liaison n'est pas renseignée ; la vue d'ensemble indique aussi la version de l'extension installée. Il purge le cache du site et attend la réponse,
+ce qui en fait aussi le test de la liaison : un secret mal recopié ou une
+adresse erronée s'y voient tout de suite, au lieu de se traduire par « le site
+ne se met pas à jour ».
+
+**Le webhook**, automatique. WordPress prévient Next à chaque publication, sans
+attendre la réponse — l'enregistrement d'un article ne doit pas dépendre d'un
+service tiers. Contrepartie : s'il échoue, personne ne le sait, d'où le bouton
+ci-dessus. Sans les constantes de `wp-config.php`, le rafraîchissement
+automatique d'une minute prend le relais.
+
+**Le mode aperçu**, pour vérifier soi-même. Un bouton **Voir l'aperçu du site**
+figure sur la vue d'ensemble et en haut de chaque écran d'administration. Il
+pose un cookie qui, *pour ce navigateur seulement*, fait relire WordPress à
+chaque affichage. Les autres visiteurs continuent de recevoir la version
+pré-rendue.
+
+Un bandeau le rappelle en bas de page, avec un lien pour en sortir. Sans lui on
+oublie qu'on est dans un mode particulier : le site paraît se mettre à jour
+instantanément pour tout le monde, et la première personne à qui on montre le
+lien voit autre chose.
+
+Le secret n'est pas écrit dans le HTML de l'administration : le bouton passe par
+une redirection WordPress qui l'ajoute côté serveur.
+
+La purge invalide l'étiquette du contenu **et** le cache de route. La seule
+étiquette ne suffirait pas dans un cas : une page construite avant que le CMS ne
+soit renseigné ne comporte aucune requête, donc aucune étiquette à purger — le
+bouton répondrait « c'est fait » sans que rien ne change.
+
+Aucun de ces mécanismes ne demande de redéploiement. **Un seul
+redéploiement reste nécessaire**, celui qui suit l'ajout de
+`WORDPRESS_API_URL` — voir le piège décrit plus bas.
+
+### Quand une modification n'apparaît pas
+
+Le repli sur le contenu du dépôt est **silencieux par conception** : c'est ce
+qui garde le site debout quand WordPress tombe, mais cela rend le diagnostic
+impossible à l'œil — une page qui affiche l'ancien texte ressemble en tout
+point à une page qui affiche le bon.
+
+Une seule URL répond :
+
+```
+https://kastell-conseils.fr/api/diagnostic?secret=<REVALIDATE_SECRET>
+```
+
+Elle dit si la variable est présente sur ce déploiement, si WordPress répond,
+en combien de temps, et **combien d'éléments il voit dans chaque liste**. Il
+suffit de comparer ces nombres à ce qu'affiche le site.
+
+| Réponse | Ce que ça veut dire |
+| --- | --- |
+| `non configuré` | `WORDPRESS_API_URL` absente de ce déploiement — l'ajouter puis **redéployer** |
+| `joignable: false`, statut 401/403 | WordPress refuse la lecture anonyme : protection du site ou extension de sécurité |
+| `joignable: false`, `fetch failed` | adresse erronée ou site éteint |
+| `joignable: true` mais les nombres ne collent pas | la page servie est antérieure : recharger deux fois |
+
+Deux causes ne se voient pas ici et sont à écarter côté WordPress : la fiche
+restée **en brouillon** (la route ne rend que le contenu publié), et le webhook
+non configuré (la modification apparaît alors en moins d'une minute, pas
+instantanément).
+
+### Le piège du déploiement antérieur
+
+Les pages de contenu déclarent `export const revalidate = 60`. Ce n'est pas
+redondant avec la période portée par la requête au CMS : une page construite
+alors que `WORDPRESS_API_URL` n'était pas encore renseignée **ne comporte
+aucune requête**, donc aucune période de revalidation. Elle reste alors figée
+pour toujours, et brancher le CMS ensuite ne change rien tant qu'on n'a pas
+redéployé — WordPress répond correctement, le site ignore simplement qu'il doit
+se relire.
+
+C'est visible dans la sortie de `npm run build` : sans la déclaration explicite
+et sans CMS, la colonne *Revalidate* de `/` était vide.
+
+### Ce qu'il faut surveiller côté référencement
+
+L'extension pose déjà trois garde-fous, parce que le piège classique du
+WordPress headless est le contenu dupliqué :
+
+- `noindex, nofollow` sur toutes les pages WordPress ;
+- un `robots.txt` qui interdit tout sur le domaine du back-office ;
+- une redirection des visiteurs non connectés vers le vrai site.
+
+Restent deux points **à faire à la main** :
+
+- **Désactiver le sitemap de Yoast** ou de Rank Math si vous les installez. Il
+  listerait des URL WordPress qui n'existent pas sur le site public. Le sitemap
+  qui fait foi est `src/app/sitemap.ts`.
+- **Reporter les redirections dans `next.config.mjs`.** Les extensions de
+  redirection WordPress ne s'exécutent jamais : leur code ne tourne pas sur le
+  domaine public.
 
 ## Couche de contenu
 
 **Aucun texte visible n'est écrit dans les composants.** Tout ce qui est
 rédactionnel vit dans `src/content/site.ts`, groupé par section : `hero`,
-`manifeste`, `offersSection`, `offers`, `about`, `founder`, `press`,
-`publications`, `references`, `clients`, `testimonials`, `news`, `posts`,
-`contact`, `footer`, `legal`.
+`vision`, `offersSection`, `offers`, `about`, `founder`, `press`,
+`publications`, `manifesto`, `references`, `clients`, `testimonials`, `news`,
+`posts`, `contact`, `footer`, `legal`.
 
 C'est le point d'entrée d'un CMS : brancher une source externe se fait à cet
 endroit, sans toucher aux composants. Chaque groupe correspond à ce que serait
@@ -282,9 +592,12 @@ attendent le contenu réel :
 | --- | --- |
 | Visuel de fond du manifeste | déposer `public/brand/manifeste.jpg` (ou .png/.webp) — voir ci-dessous |
 | Dates des articles de presse | `press` dans `src/content/site.ts` |
-| URL LinkedIn (page entreprise et profil de Léa) | `site.linkedin` / `site.linkedinProfile` |
+| URL LinkedIn (page entreprise et profil de Léa) | `site.linkedin` / `site.linkedinProfile` — tant qu'elles valent `#`, les boutons LinkedIn ne s'affichent pas |
 | Titre de la tribune et nom du média | `publications` dans `src/content/site.ts` |
-| Description du Réseau Influence & Territoire | `publications` |
+| Couverture du manifeste RIT | `manifesto.coverUrl`, ou l'image « Manifeste — couverture » dans WordPress — voir ci-dessous |
+| PDF du manifeste RIT | `public/documents/manifeste-rit.pdf`, ou le fichier téléversé dans WordPress — voir ci-dessous |
+| Envoi des courriels de contact | `BREVO_API_KEY` ou `RESEND_API_KEY`, plus `MAIL_EXPEDITEUR` — **indispensable avant la mise en ligne** |
+| Destination des adresses e-mail collectées | variable `MANIFESTE_WEBHOOK_URL` — voir ci-dessous |
 | Logos des médias (presse) | `public/brand/press/…` — voir ci-dessous |
 | Contenu des pages légales | `src/app/mentions-legales`, `confidentialite`, `cookies` |
 | Logos clients | déposer dans `public/brand/clients/` — voir ci-dessous |

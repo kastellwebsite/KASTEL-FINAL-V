@@ -1,16 +1,23 @@
 import Image from "next/image";
+import { ListeDepliable } from "@/components/ListeDepliable";
 import { Reveal } from "@/components/Reveal";
 import { site } from "@/content/site";
-import { getContent } from "@/sanity/content";
+import { getContent } from "@/cms/content";
+import Link from "next/link";
+import { estInterne, estUtile } from "@/lib/lien";
 
 export async function APropos() {
   const { about, founder, press, publications } = await getContent();
   const portrait = founder.photoUrl;
+  const profil = estUtile(site.linkedinProfile) ? site.linkedinProfile : null;
   return (
     <section id="apropos" className="band-dark">
       <div className="shell band-lg">
         <div className="grid items-start gap-[clamp(32px,5vw,80px)] [grid-template-columns:minmax(220px,0.72fr)_minmax(280px,1.28fr)] max-[820px]:[grid-template-columns:1fr]">
-          <div className="apropos-colonne flex flex-col">
+          {/* Solidaire du défilement : la biographie est bien plus haute que le
+              portrait et sa citation, qui laissaient sinon un creux de plusieurs
+              centaines de pixels. */}
+          <div className="apropos-colonne flex flex-col min-[821px]:sticky min-[821px]:top-[calc(var(--header-h,75px)+40px)] min-[821px]:self-start">
             <Reveal
               as="figure"
               className="relative m-0 flex min-h-[clamp(300px,30vw,430px)] items-end overflow-hidden border border-[rgba(226,240,248,0.14)] bg-[rgba(226,240,248,0.06)] p-6 [background-image:repeating-linear-gradient(135deg,rgba(226,240,248,0.06)_0_2px,transparent_2px_12px)]"
@@ -42,18 +49,20 @@ export async function APropos() {
                 </p>
               </blockquote>
 
-              <a
-                href={site.linkedinProfile}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="press-link mt-[clamp(20px,2.4vw,28px)] inline-flex items-center gap-2 rounded-full border border-[rgba(226,240,248,0.4)] px-6 py-3 font-sans text-[13px] font-medium uppercase tracking-[0.1em] text-white hover:border-white hover:bg-[rgba(226,240,248,0.1)]"
-              >
-                {founder.linkedinCta}
-                <span className="inline-block" aria-hidden>
-                  ↗
-                </span>
-                <span className="sr-only"> (nouvelle fenêtre)</span>
-              </a>
+              {profil ? (
+                <a
+                  href={profil}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="press-link mt-[clamp(20px,2.4vw,28px)] inline-flex items-center gap-2 rounded-full border border-[rgba(226,240,248,0.4)] px-6 py-3 font-sans text-[13px] font-medium uppercase tracking-[0.1em] text-white hover:border-white hover:bg-[rgba(226,240,248,0.1)]"
+                >
+                  {founder.linkedinCta}
+                  <span className="inline-block" aria-hidden>
+                    ↗
+                  </span>
+                  <span className="sr-only"> (nouvelle fenêtre)</span>
+                </a>
+              ) : null}
             </Reveal>
           </div>
 
@@ -81,92 +90,141 @@ export async function APropos() {
           </Reveal>
         </div>
 
-        {/* Presse et publications sur toute la largeur : l'ordre de lecture
-            reste correct une fois la grille repliée en une colonne. */}
-        <div className="mt-[clamp(48px,6vw,80px)] grid gap-[clamp(36px,5vw,80px)] [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
-          <Reveal index={2} className="border-t border-[rgba(226,240,248,0.2)] pt-[22px]">
-            <p className="eyebrow-dark mb-[18px] text-[12px] font-medium tracking-[0.22em]">
-              {about.pressHeading}
-            </p>
-            <ul className="m-0 flex list-none flex-col gap-[14px] p-0">
-              {press.map((article) => (
-                <li key={article.href}>
-                  <a
-                    href={article.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="press-link flex items-center gap-[14px] text-[15px] leading-[1.5] text-[rgba(226,240,248,0.82)] hover:text-white"
-                  >
-                    {article.logoUrl ? (
-                      <span className="press-logo relative block h-[42px] w-[116px] shrink-0 overflow-hidden rounded-[8px] bg-bone">
-                        <Image
-                          src={article.logoUrl}
-                          alt={article.outlet}
-                          fill
-                          sizes="116px"
-                          unoptimized
-                          className="object-contain px-2.5 py-2"
-                        />
-                      </span>
-                    ) : (
-                      <span className="flex h-[42px] w-[116px] shrink-0 items-center justify-center rounded-[8px] border border-[rgba(139,177,159,0.35)] bg-[rgba(139,177,159,0.12)] px-2 text-center font-sans text-[10px] uppercase leading-[1.25] tracking-[0.1em] text-accent">
-                        {article.outlet}
-                      </span>
-                    )}
-                    <span>
-                      {article.title}
-                      {" "}
-                      <span className="inline-block" aria-hidden>
-                        ↗
-                      </span>
-                      <span className="sr-only"> (nouvelle fenêtre)</span>
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </Reveal>
+        {/* Deux bandes pleine largeur plutôt que deux colonnes côte à côte :
+            les listes n'ont pas le même nombre d'entrées, et les mettre en
+            regard laissait un vide sous la plus courte. */}
+        <div className="mt-[clamp(48px,6vw,80px)] border-t border-[rgba(226,240,248,0.2)] pt-[22px]">
+          <p className="eyebrow-dark mb-[20px] text-[12px] font-medium tracking-[0.22em]">
+            {about.pressHeading}
+          </p>
+          <ListeDepliable
+            seuil={3}
+            plus={about.pressPlus}
+            moins={about.pressMoins}
+            className="grid gap-[clamp(16px,2vw,26px)] [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]"
+          >
+            {press.map((article) => (
+              <a
+                key={article.href}
+                href={article.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="press-link flex h-full flex-col gap-[14px] text-[15px] leading-[1.5] text-[rgba(226,240,248,0.82)] hover:text-white"
+              >
+                {article.logoUrl ? (
+                  /* Hauteur imposée, largeur libre : les logos de presse vont
+                     du bandeau très large au carré, et un cadre unique
+                     réduisait les seconds à une vignette perdue dans du blanc.
+                     Balise native parce que la taille réelle du fichier,
+                     téléversé dans WordPress, n'est pas connue au rendu. */
+                  <span className="press-logo flex h-[64px] w-fit min-w-[64px] max-w-[168px] shrink-0 self-start items-center justify-center overflow-hidden rounded-[8px] bg-bone px-3.5 py-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={article.logoUrl}
+                      alt={article.outlet}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-auto max-w-full object-contain"
+                    />
+                  </span>
+                ) : (
+                  <span className="flex h-[64px] w-fit min-w-[64px] max-w-[168px] shrink-0 self-start items-center justify-center rounded-[8px] border border-[rgba(115,193,103,0.35)] bg-[rgba(115,193,103,0.12)] px-3 text-center font-sans text-[11px] uppercase leading-[1.2] tracking-[0.06em] text-accent">
+                    {article.outlet}
+                  </span>
+                )}
+                <span>
+                  {article.title}{" "}
+                  <span className="inline-block" aria-hidden>
+                    ↗
+                  </span>
+                  <span className="sr-only"> (nouvelle fenêtre)</span>
+                </span>
+              </a>
+            ))}
+          </ListeDepliable>
+        </div>
 
-          <Reveal index={3} className="border-t border-[rgba(226,240,248,0.2)] pt-[22px]">
-            <p className="eyebrow-dark mb-[18px] text-[12px] font-medium tracking-[0.22em]">
-              {about.publicationsHeading}
-            </p>
-            <ul className="m-0 flex list-none flex-col gap-[22px] p-0">
-              {publications.map((item) => (
-                <li key={item.href}>
-                  <p className="m-0 mb-1.5 font-sans text-[11px] uppercase tracking-[0.18em] text-frost">
-                    {item.label}
-                  </p>
-                  <p className="m-0 mb-1.5 font-serif text-[clamp(19px,1.7vw,24px)] leading-[1.25] text-white">
-                    {item.title}
-                  </p>
-                  <p className="m-0 mb-2.5 max-w-[46ch] text-[15px] leading-[1.6] text-[rgba(226,240,248,0.72)]">
-                    {item.context}
-                  </p>
-                  {item.objectives?.length ? (
-                    <ol className="m-0 mb-2.5 flex max-w-[46ch] list-decimal flex-col gap-1.5 pl-[18px] text-[15px] leading-[1.55] text-[rgba(226,240,248,0.72)] marker:text-frost">
-                      {item.objectives.map((objectif) => (
-                        <li key={objectif}>{objectif}</li>
-                      ))}
-                    </ol>
-                  ) : null}
+        <div className="mt-[clamp(40px,5vw,64px)] border-t border-[rgba(226,240,248,0.2)] pt-[22px]">
+          <p className="eyebrow-dark mb-[20px] text-[12px] font-medium tracking-[0.22em]">
+            {about.publicationsHeading}
+          </p>
+          <ListeDepliable
+            seuil={3}
+            plus={about.publicationsPlus}
+            moins={about.publicationsMoins}
+            className="grid gap-[clamp(22px,3vw,40px)] [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]"
+          >
+            {publications.map((item) => (
+              <div
+                key={item.href}
+                className="publication flex h-full flex-col items-start"
+              >
+                <p className="m-0 mb-1.5 font-sans text-[11px] uppercase tracking-[0.18em] text-frost">
+                  {item.label}
+                </p>
+                <p className="m-0 mb-1.5 font-serif text-[clamp(19px,1.7vw,24px)] leading-[1.25] text-white">
+                  {item.title}
+                </p>
+                <p className="m-0 mb-2.5 max-w-[46ch] text-[15px] leading-[1.6] text-[rgba(226,240,248,0.72)]">
+                  {item.context}
+                </p>
+                {item.objectives?.length ? (
+                  <ol className="m-0 mb-2.5 flex max-w-[46ch] list-decimal flex-col gap-1.5 pl-[18px] text-[15px] leading-[1.55] text-[rgba(226,240,248,0.72)] marker:text-frost">
+                    {item.objectives.map((objectif) => (
+                      <li key={objectif}>{objectif}</li>
+                    ))}
+                  </ol>
+                ) : null}
+                {/* Le visuel, quand il existe : la photo de l'article paru en
+                    presse écrite, la couverture du média. Il garde ses
+                    proportions — un journal photographié n'a pas le format
+                    d'une couverture — et son plafond se mesure sur la carte.
+                    Balise native : le format du fichier téléversé dans
+                    WordPress n'est pas connu au rendu. */}
+                {item.image ? (
+                  <span className="publication-visuel mb-3.5 flex">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.image}
+                      alt=""
+                      aria-hidden
+                      loading="lazy"
+                      decoding="async"
+                      className="block w-auto max-w-full rounded-[10px] border border-[rgba(226,240,248,0.18)]"
+                    />
+                  </span>
+                ) : null}
+
+                {/* Une section du site reste dans l'onglet : ouvrir une fenêtre
+                    pour descendre plus bas dans la page n'aurait aucun sens, et
+                    la flèche doit dire où l'on va. */}
+                {estInterne(item.href) ? (
+                  <Link
+                    href={item.href}
+                    className="press-link hit-area mt-auto inline-block pt-1 font-sans text-[13px] font-medium uppercase tracking-[0.1em] text-[rgba(226,240,248,0.9)] hover:text-white"
+                  >
+                    {item.cta}{" "}
+                    <span className="inline-block" aria-hidden>
+                      ↓
+                    </span>
+                  </Link>
+                ) : (
                   <a
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="press-link inline-block font-sans text-[13px] font-medium uppercase tracking-[0.1em] text-[rgba(226,240,248,0.9)] hover:text-white"
+                    className="press-link hit-area mt-auto inline-block pt-1 font-sans text-[13px] font-medium uppercase tracking-[0.1em] text-[rgba(226,240,248,0.9)] hover:text-white"
                   >
-                    {item.cta}
-                    {" "}
+                    {item.cta}{" "}
                     <span className="inline-block" aria-hidden>
                       ↗
                     </span>
                     <span className="sr-only"> (nouvelle fenêtre)</span>
                   </a>
-                </li>
-              ))}
-            </ul>
-          </Reveal>
+                )}
+              </div>
+            ))}
+          </ListeDepliable>
         </div>
       </div>
     </section>

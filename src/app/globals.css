@@ -40,7 +40,7 @@
   }
 
   a:hover {
-    color: #4b7662;
+    color: #35752B;
   }
 
   input,
@@ -55,7 +55,7 @@
 
   /* The UA outline is near-black: invisible on the forest bands. */
   :where(a, button, [tabindex]):focus-visible {
-    outline: 2px solid #4b7662;
+    outline: 2px solid #35752B;
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -96,6 +96,16 @@
     inset: -6px -4px;
   }
 
+  /*
+   * La navigation d'en-tête, elle, a de la place : 20 px séparent deux
+   * intitulés et l'en-tête fait 75 px de haut. Sa zone de clic peut donc
+   * grandir sans empiéter sur la voisine — ce que la colonne du pied de page
+   * ne permet pas.
+   */
+  .nav-link.hit-area::after {
+    inset: -12px -6px;
+  }
+
   /* ---- layout ---- */
   .shell {
     max-width: 1280px;
@@ -120,7 +130,7 @@
   }
 
   .hairline-top {
-    border-top: 1px solid rgba(75, 118, 98, 0.2);
+    border-top: 1px solid rgba(53,117,43, 0.2);
   }
 
   .grid-auto {
@@ -134,8 +144,632 @@
     font-size: 17px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #4b7662;
+    color: #35752B;
     margin: 0;
+  }
+
+  /* Intitulé précédé d'un filet, pour les blocs « document ». */
+  .eyebrow-rule {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #35752B;
+    margin: 0;
+  }
+
+  .eyebrow-rule::before {
+    content: "";
+    width: 30px;
+    height: 2px;
+    background: #35752B;
+    flex: none;
+  }
+
+  /* ---- couverture du manifeste ---- */
+  /*
+   * La couverture se dimensionne sur sa propre largeur, pas sur celle de la
+   * fenêtre : mêmes proportions dans la colonne du bureau et une fois la grille
+   * repliée sur mobile.
+   *
+   * Sa marge intérieure est en pourcentage, pas en cqw : un conteneur ne peut
+   * pas s'interroger lui-même, ses propres cqw retomberaient sur la fenêtre.
+   */
+  .manifeste-couv {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 500 / 707;
+    padding: 5.5%;
+    border-radius: 14px;
+    background: #faf9f6;
+    box-shadow:
+      0 2px 6px rgba(25, 41, 36, 0.06),
+      0 22px 48px rgba(25, 41, 36, 0.14);
+  }
+
+  .manifeste-couv-bloc {
+    background: #192924;
+    border-radius: 10px;
+    padding: 7cqw 6cqw 7.5cqw;
+  }
+
+  .manifeste-couv-titre {
+    margin: 0 0 4.5cqw;
+    font-family: var(--font-serif), "Instrument Serif", Georgia, serif;
+    font-size: 12cqw;
+    line-height: 1.02;
+    color: #faf9f6;
+  }
+
+  .manifeste-couv-sous {
+    margin: 0;
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    /* Plancher : la carte rétrécit avec la fenêtre, pas l'œil du lecteur. */
+    font-size: max(3.3cqw, 10.5px);
+    line-height: 1.45;
+    color: rgba(226, 240, 248, 0.75);
+  }
+
+  .manifeste-couv-carte {
+    flex: 1;
+    margin: 5cqw 0;
+    border-radius: 10px;
+    background:
+      url("/brand/manifeste-carte.svg") center / cover no-repeat,
+      #F1F7F0;
+  }
+
+  /* Dans le flux, calée à droite : la marque reste sur la marge crème du bas. */
+  .manifeste-couv-marque {
+    align-self: flex-end;
+    margin: 0;
+    padding: 1.6cqw 3cqw;
+    border: 1.5px solid #192924;
+    border-radius: 4px;
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    font-size: max(4.2cqw, 11px);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #192924;
+  }
+
+  /* ---- listes dépliables et citations écrêtées ---- */
+  .au-dela {
+    display: none;
+  }
+
+  .pill-depliable {
+    border: 1px solid rgba(226, 240, 248, 0.4);
+    padding: 12px 24px;
+    color: #faf9f6;
+  }
+
+  .pill-depliable:hover {
+    background: rgba(226, 240, 248, 0.1);
+    border-color: #ffffff;
+  }
+
+  /* Quatre lignes : de quoi juger du propos sans que la carte s'étire. */
+  .citation.est-ecretee {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+  }
+
+  .citation-lien {
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    font-size: 14px;
+    color: #35752b;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .citation-lien:hover {
+    color: #192924;
+  }
+
+  /* ---- formulaire de contact ---- */
+  /*
+   * Posé sur la bande vert foncé : la carte est claire, pour que le formulaire
+   * se lise comme une zone de saisie et non comme du décor sur du sombre.
+   */
+  .formulaire-carte {
+    padding: clamp(24px, 3vw, 38px);
+    border-radius: 18px;
+    background: #faf9f6;
+    color: #1a1e1c;
+  }
+
+  .formulaire-titre {
+    margin: 0 0 clamp(20px, 2.4vw, 28px);
+    font-family: var(--font-serif), "Instrument Serif", Georgia, serif;
+    font-size: clamp(23px, 2.2vw, 29px);
+    font-weight: 400;
+    line-height: 1.2;
+    color: #192924;
+  }
+
+  .formulaire {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Les champs courts vont par deux, les longs prennent la largeur. */
+  .formulaire-large {
+    grid-column: 1 / -1;
+  }
+
+  .formulaire-champ {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 0;
+  }
+
+  .formulaire-champ label {
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #35752b;
+  }
+
+  .formulaire-aide {
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    color: #666f6c;
+  }
+
+  .formulaire input,
+  .formulaire select,
+  .formulaire textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid rgba(25, 41, 36, 0.26);
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: inherit;
+    /* 16 px : en deçà, iOS agrandit la page au premier appui dans un champ. */
+    font-size: 16px;
+    line-height: 1.5;
+    color: #1a1e1c;
+  }
+
+  .formulaire textarea {
+    resize: vertical;
+    min-height: 128px;
+  }
+
+  /*
+   * Le sélecteur natif impose son propre habillage — deux flèches empilées sur
+   * macOS, un dégradé gris sur Windows — qui ne ressemble à aucun autre champ
+   * du formulaire. On le neutralise et on dessine le chevron, en gardant la
+   * réserve à droite pour qu'il ne chevauche jamais un intitulé long.
+   */
+  .formulaire select {
+    appearance: none;
+    padding-right: 44px;
+    background-image: linear-gradient(45deg, transparent 50%, #35752b 50%),
+      linear-gradient(135deg, #35752b 50%, transparent 50%);
+    background-position:
+      calc(100% - 22px) calc(50% + 2px),
+      calc(100% - 16px) calc(50% + 2px);
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+
+  .formulaire select:hover {
+    border-color: rgba(25, 41, 36, 0.45);
+  }
+
+  .formulaire input:focus,
+  .formulaire select:focus,
+  .formulaire textarea:focus {
+    outline: 2px solid #192924;
+    outline-offset: 1px;
+  }
+
+  .formulaire-consentement {
+    display: flex;
+    gap: 12px;
+    /* Le rembourrage grandit la zone de clic sans déplacer le texte : sur une
+       seule ligne, le libellé ne faisait que 22 px de haut. */
+    margin: -6px 0 0;
+    padding: 10px 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #2f3835;
+    cursor: pointer;
+  }
+
+  .formulaire-consentement input {
+    flex: none;
+    width: 21px;
+    height: 21px;
+    margin-top: 1px;
+    padding: 0;
+    accent-color: #192924;
+  }
+
+  .formulaire-pied {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 22px;
+    margin-top: 4px;
+  }
+
+  .formulaire-pied button:disabled {
+    opacity: 0.6;
+  }
+
+  .formulaire-mention {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #666f6c;
+  }
+
+  .formulaire-lien {
+    color: #35752b;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .formulaire-message {
+    margin: 6px 0 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #35752b;
+  }
+
+  .formulaire-message.est-erreur {
+    color: #97331f;
+  }
+
+  .formulaire-replier {
+    margin-top: 14px;
+  }
+
+  .formulaire-succes {
+    margin: 0;
+    font-size: clamp(16px, 1.4vw, 18px);
+    line-height: 1.65;
+    color: #192924;
+  }
+
+  /* ---- menu repliable ---- */
+  .menu-bouton {
+    display: grid;
+    place-items: center;
+    /* 48 px : une cible qu'un pouce atteint sans viser. */
+    width: 48px;
+    height: 48px;
+    margin-right: -10px;
+    border-radius: 999px;
+    color: #192924;
+  }
+
+  .menu-bouton:hover {
+    background: rgba(25, 41, 36, 0.06);
+  }
+
+  .menu-barres {
+    display: block;
+    position: relative;
+    width: 22px;
+    height: 14px;
+  }
+
+  .menu-barres span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition:
+      transform 220ms cubic-bezier(0.2, 0, 0, 1),
+      top 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .menu-barres span:first-child {
+    top: 0;
+  }
+
+  .menu-barres span:last-child {
+    top: 12px;
+  }
+
+  /* Les deux barres deviennent la croix de fermeture. */
+  .menu-barres[data-ouvert="true"] span {
+    top: 6px;
+  }
+
+  .menu-barres[data-ouvert="true"] span:first-child {
+    transform: rotate(45deg);
+  }
+
+  .menu-barres[data-ouvert="true"] span:last-child {
+    transform: rotate(-45deg);
+  }
+
+  .menu-panneau {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: calc(100dvh - 100%);
+    overflow-y: auto;
+    padding-bottom: 18px;
+    /* Opaque, et non translucide comme la barre : le texte de la page
+       défilerait derrière les liens. */
+    background: #faf9f6;
+    border-bottom: 1px solid rgba(25, 41, 36, 0.12);
+    box-shadow: 0 18px 34px rgba(25, 41, 36, 0.12);
+    animation: menu-ouvre 200ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  @keyframes menu-ouvre {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  .menu-lien {
+    display: flex;
+    align-items: center;
+    /* 56 px de haut : la hauteur de rang confortable sur téléphone. */
+    min-height: 56px;
+    border-bottom: 1px solid rgba(25, 41, 36, 0.1);
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: #192924;
+  }
+
+  .menu-lien:hover {
+    color: #35752b;
+  }
+
+  .menu-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 54px;
+    margin-top: 18px;
+    border-radius: 999px;
+    background: #192924;
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #faf9f6;
+  }
+
+  .menu-cta:hover {
+    background: #0f1a17;
+    color: #faf9f6;
+  }
+
+  /* ---- bandeau d'aperçu ---- */
+  /*
+   * Fixé en bas plutôt qu'en haut : en haut il décalerait l'en-tête collant et
+   * fausserait précisément ce qu'on est en train de vérifier.
+   */
+  .bandeau-apercu {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: calc(100vw - 32px);
+    padding: 12px 18px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: #192924;
+    color: #faf9f6;
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    box-shadow: 0 8px 28px rgba(15, 26, 23, 0.32);
+  }
+
+  .bandeau-apercu strong {
+    font-weight: 600;
+  }
+
+  .bandeau-apercu a {
+    flex: none;
+    padding: 6px 14px;
+    border: 1px solid rgba(226, 240, 248, 0.45);
+    border-radius: 999px;
+    color: #faf9f6;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .bandeau-apercu a:hover {
+    background: rgba(226, 240, 248, 0.14);
+  }
+
+  /* ---- boîte de dialogue du téléchargement ---- */
+  .modale {
+    width: min(520px, calc(100vw - 32px));
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+    padding: clamp(26px, 4vw, 40px);
+    border: none;
+    border-radius: 16px;
+    background: #faf9f6;
+    color: #1a1e1c;
+    box-shadow: 0 24px 60px rgba(25, 41, 36, 0.28);
+  }
+
+  .modale::backdrop {
+    background: rgba(15, 26, 23, 0.55);
+  }
+
+  .modale-fermer-zone {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 4px;
+  }
+
+  .modale-fermer {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin: -8px -8px 0 0;
+    border-radius: 999px;
+    font-size: 22px;
+    line-height: 1;
+    color: #4a5350;
+  }
+
+  .modale-fermer:hover {
+    background: #f2efea;
+    color: #192924;
+  }
+
+  .modale-titre {
+    margin: 0 0 10px;
+    font-family: var(--font-serif), "Instrument Serif", Georgia, serif;
+    font-size: clamp(26px, 3vw, 34px);
+    font-weight: 400;
+    line-height: 1.15;
+    color: #192924;
+  }
+
+  .modale-intro {
+    margin: 0 0 24px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #2f3835;
+  }
+
+  .modale-label {
+    display: block;
+    margin-bottom: 8px;
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #35752B;
+  }
+
+  .modale-champ {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid rgba(25, 41, 36, 0.28);
+    border-radius: 10px;
+    background: #ffffff;
+    font-family: inherit;
+    font-size: 16px;
+    color: #1a1e1c;
+  }
+
+  .modale-champ:focus {
+    outline: 2px solid #192924;
+    outline-offset: 1px;
+  }
+
+  .modale-consentement {
+    display: flex;
+    gap: 12px;
+    margin: 18px 0 24px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #2f3835;
+    cursor: pointer;
+  }
+
+  .modale-consentement input {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: #192924;
+  }
+
+  .modale-envoyer {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modale-envoyer:disabled {
+    opacity: 0.6;
+  }
+
+  .modale-message {
+    margin: 14px 0 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #35752B;
+  }
+
+  .modale-message.est-erreur {
+    color: #97331f;
+  }
+
+  .modale-message:empty {
+    display: none;
+  }
+
+  .modale-note {
+    margin: 22px 0 0;
+    padding-top: 18px;
+    border-top: 1px solid rgba(25, 41, 36, 0.12);
+    font-size: 13px;
+    line-height: 1.55;
+    color: #666f6c;
+  }
+
+  .modale-lien {
+    color: #35752B;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Numérotation verte des objectifs, alignée hors du texte. */
+  .manifeste-liste {
+    counter-reset: objectif;
+  }
+
+  .manifeste-liste > li {
+    position: relative;
+    padding-left: 34px;
+    counter-increment: objectif;
+  }
+
+  .manifeste-liste > li::before {
+    content: counter(objectif) ".";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: var(--font-sans), "Instrument Sans", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #35752B;
   }
 
   .eyebrow-tight {
@@ -144,7 +778,7 @@
     font-weight: 500;
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: #4b7662;
+    color: #35752B;
     margin: 0;
   }
 
@@ -253,7 +887,9 @@
     color: #192924;
     border: 1px solid rgba(25, 41, 36, 0.35);
     border-radius: 999px;
-    padding: 8px 18px;
+    /* 33 px de haut pour l'appel à l'action principal de l'en-tête, c'était
+       moins que les intitulés voisins. */
+    padding: 11px 18px;
     white-space: nowrap;
   }
 
@@ -283,7 +919,7 @@
     width: 8px;
     height: 8px;
     border-radius: 999px;
-    background: #8bb19f;
+    background: #73C167;
   }
 
   /* ---- cartes offres ---- */
@@ -297,15 +933,17 @@
   }
 
   .offer-card:hover .offer-title {
-    color: #4b7662;
+    color: #35752B;
   }
 
   .offer-index {
     font-family: var(--font-sans), "Instrument Sans", sans-serif;
-    font-size: 12px;
+    /* Un repère, pas du corps de texte — mais 12 px reste petit sur un écran
+       tenu à bout de bras. */
+    font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.2em;
-    color: #4b7662;
+    color: #35752B;
   }
 
   .offer-title {
@@ -608,12 +1246,47 @@
     .reveal-hero-cta {
       transition-delay: 260ms;
     }
+
+    /*
+     * Apparition jouée par la feuille de style, pour le contenu visible sans
+     * défilement. Mêmes durée, courbe et décalage que la transition pilotée
+     * par l'observateur : à l'œil, rien ne distingue les deux. La différence
+     * est qu'elle démarre au premier rendu au lieu d'attendre l'hydratation,
+     * ce qui sortait la plus grande peinture de la page du chemin critique du
+     * JavaScript.
+     */
+    .reveal.reveal-immediat {
+      animation: reveal-entree 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+
+    .reveal-immediat.reveal-hero-cta {
+      animation-delay: 260ms;
+    }
+
+    @keyframes reveal-entree {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .menu-panneau {
+    animation: none;
+  }
+
+  .menu-barres span {
+    transition: none;
   }
 
   .reveal,
@@ -650,4 +1323,125 @@
   .apropos-citation {
     order: 1;
   }
+}
+
+/*
+ * Zone de visée élargie sous 860 px : on y vise au pouce, pas à la souris.
+ * Hors @layer — Tailwind purge les règles d'une couche dont le sélecteur
+ * n'apparaît que dans une media query.
+ */
+@media (max-width: 859px) {
+  .hit-area::after {
+    inset: -12px -8px;
+  }
+}
+
+/*
+ * Sans JavaScript, le bouton de menu ne fait rien et la navigation devient
+ * injoignable en petit écran. On rend alors le panneau à plat, dans le flux :
+ * le bandeau est plus haut, mais le site reste parcourable.
+ */
+@media (scripting: none) and (max-width: 859px) {
+  .menu-bouton {
+    display: none;
+  }
+
+  .menu-panneau,
+  .menu-panneau[hidden] {
+    display: block;
+    position: static;
+    max-height: none;
+    animation: none;
+    box-shadow: none;
+    border-bottom: 0;
+  }
+}
+
+/*
+ * Formulaire sur une colonne en petit écran. Hors @layer — Tailwind purge les
+ * règles d'une couche dont le sélecteur n'apparaît que dans une media query.
+ */
+@media (max-width: 560px) {
+  .formulaire {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/*
+ * Sans JavaScript, les boutons de dépliage ne feraient rien : le contenu
+ * au-delà du seuil, et la fin des citations, resteraient inaccessibles. On les
+ * rétablit — mieux vaut une page longue qu'une page amputée.
+ */
+@media (scripting: none) {
+  .au-dela {
+    display: revert;
+  }
+
+  .pill-depliable,
+  .citation-lien {
+    display: none;
+  }
+
+  .citation.est-ecretee {
+    display: block;
+    overflow: visible;
+  }
+}
+
+/*
+ * Cartes LinkedIn alignées bande par bande. La longueur des extraits varie
+ * d'un post à l'autre : sans grille imbriquée, le visuel et le lien de chaque
+ * carte se plaçaient à une hauteur différente. Hors @layer — même raison que
+ * ci-dessus. La règle est conditionnée : là où subgrid manque, les cartes
+ * restent en colonne flex, simplement moins régulières.
+ */
+.news-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.news-bas {
+  container-type: inline-size;
+}
+
+/* Le plafond du visuel se mesure sur la carte, pas sur la fenêtre : en colonne
+ * unique la carte est bien plus large qu'en trois colonnes, et un plafond en
+ * unités d'écran aurait rapetissé les visuels là où il y a le plus de place. */
+.news-visuel img {
+  max-height: 66cqw;
+}
+
+@supports (grid-template-rows: subgrid) {
+  .news-grille {
+    align-items: stretch;
+  }
+
+  .news-card {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+  }
+
+  /* Le jeu se range ici, sous le lien, et non entre le visuel et lui. */
+  .news-bas {
+    align-self: start;
+  }
+}
+
+/*
+ * Visuel d'une publication : hauteur plafonnée sur la largeur de la carte, et
+ * non sur celle de la fenêtre — une carte sur trois en grand écran est plus
+ * étroite qu'une carte unique en mobile. Le conteneur de requête est posé sur
+ * la carte, qui n'est pas une grille imbriquée : il l'aurait désolidarisée de
+ * la grille, comme cela s'est produit pour les cartes LinkedIn.
+ */
+.publication {
+  container-type: inline-size;
+}
+
+/* Deux plafonds, et le plus bas gagne : la mesure sur la carte suit les
+ * colonnes, mais une publication seule occupe toute la largeur de la bande —
+ * son visuel atteignait alors 911 px de haut. */
+.publication-visuel img {
+  max-height: min(78cqw, 300px);
 }

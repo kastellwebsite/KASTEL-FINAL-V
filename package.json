@@ -9,20 +9,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
-    "studio:build": "sanity build dist"
+    "lint": "eslint ."
   },
   "dependencies": {
-    "@sanity/image-url": "^2.1.1",
-    "@sanity/vision": "^6.10.1",
     "next": "^16.3.2",
-    "next-sanity": "^13.3.3",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "sanity": "^6.10.1",
-    "styled-components": "^6.5.3"
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.3.4",
     "@types/node": "22.15.3",
     "@types/react": "19.1.9",
     "@types/react-dom": "19.1.7",

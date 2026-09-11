@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { Reveal } from "@/components/Reveal";
-import { getContent } from "@/sanity/content";
+import { getContent } from "@/cms/content";
+import { estUtile } from "@/lib/lien";
 
 export async function News() {
   const { founder, news, posts, site } = await getContent();
+  const profil = estUtile(site.linkedinProfile) ? site.linkedinProfile : null;
   return (
     <section className="hairline-top bg-sand">
       <div className="shell band-md">
@@ -19,25 +21,45 @@ export async function News() {
               {news.heading}
             </h2>
           </div>
-          <a
-            href={site.linkedinProfile}
-            className="pill pill-outline px-[22px] py-[10px] text-[12px]"
-          >
-            {news.followCta} <span aria-hidden>↗</span>
-          </a>
+          {profil ? (
+            <a
+              href={profil}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pill pill-outline px-[22px] py-[13px] text-[12px]"
+            >
+              {news.followCta} <span aria-hidden>↗</span>
+              <span className="sr-only"> (nouvelle fenêtre)</span>
+            </a>
+          ) : null}
         </Reveal>
 
+        {/* Grille imbriquée : sans elle, chaque carte plaçait son visuel et
+            son lien à une hauteur différente, au gré de la longueur du texte.
+            Les quatre bandes — auteur, texte, visuel, lien — sont désormais
+            alignées d'une carte à l'autre. */}
         <Reveal
           index={1}
-          className="grid gap-[clamp(18px,2vw,28px)] [grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))]"
+          className="news-grille grid gap-[clamp(18px,2vw,28px)] [grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))]"
         >
-          {posts.map((post) => (
-            <a
-              key={post.date}
-              href={post.href}
-              className="news-card flex flex-col rounded-[14px] border border-[rgba(25,41,36,0.14)] bg-white p-[clamp(20px,2.2vw,26px)] hover:border-sage"
+          {/* La date ne fait pas une clé : deux posts publiés le même jour la
+              partagent, et React confondrait alors les deux cartes. */}
+          {posts.map((post, i) => {
+            /* Sans lien vers le post, la carte reste une carte : la rendre
+               cliquable n'aboutirait qu'à faire remonter la page. */
+            const lien = estUtile(post.href) ? post.href : null;
+            const Boite = lien ? "a" : "div";
+            return (
+            <Boite
+              key={`${post.date}-${i}`}
+              {...(lien
+                ? { href: lien, target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+              className={`news-card rounded-[14px] border border-[rgba(25,41,36,0.14)] bg-white p-[clamp(18px,2vw,23px)] ${
+                lien ? "hover:border-sage" : ""
+              }`}
             >
-              <div className="mb-5 flex items-center gap-3">
+              <div className="mb-[17px] flex items-center gap-3">
                 <Image
                   src={founder.photoUrl ?? founder.photo}
                   alt=""
@@ -63,19 +85,53 @@ export async function News() {
                 </span>
               </div>
 
-              <p className="m-0 mb-5 text-[16px] leading-[1.6] text-graphite">
+              <p className="m-0 mb-[17px] text-[16px] leading-[1.55] text-graphite">
                 {post.excerpt}
               </p>
 
-              <span className="flex aspect-[16/10] items-end rounded-[9px] border border-[rgba(25,41,36,0.1)] bg-sand p-3 font-mono text-[11px] text-muted">
-                {news.previewLabel}
-              </span>
+              {/* Visuel et lien voyagent ensemble dans la même rangée : le
+                  lien colle au bas du visuel au lieu d'être renvoyé en pied de
+                  carte, et le jeu qui reste — les visuels n'ont pas tous la
+                  même hauteur — se range sous le lien, là où il ne troue rien. */}
+              <div className="news-bas">
+                {/* Le visuel du post quand il existe, l'aplat sinon : une carte
+                    sans image reste une carte, elle ne se replie pas. */}
+                {post.image ? (
+                  /* Aucune bande d'accueil : c'est le visuel qui donne sa
+                     hauteur, si bien qu'aucun format ne peut creuser un vide
+                     sous lui. Une une de magazine est verticale, une coupure
+                     de presse presque carrée : seul un plafond les empêche de
+                     dévorer la carte. Le filet, lui, détache une coupure à
+                     fond blanc de la carte, blanche elle aussi.
+                     Balise native : le format du fichier téléversé dans
+                     WordPress n'est pas connu au rendu. */
+                  <span className="news-visuel flex justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={post.image}
+                      alt=""
+                      aria-hidden
+                      loading="lazy"
+                      decoding="async"
+                      className="block w-auto max-w-full rounded-[10px] border border-[rgba(25,41,36,0.12)]"
+                    />
+                  </span>
+                ) : (
+                  <span className="news-visuel flex aspect-[4/3] items-end rounded-[9px] border border-[rgba(25,41,36,0.1)] bg-sand p-3 font-mono text-[11px] text-muted">
+                    {news.previewLabel}
+                  </span>
+                )}
 
-              <span className="mt-[22px] font-sans text-[13px] font-medium uppercase tracking-[0.1em] text-forest">
-                {news.postCta} <span aria-hidden>→</span>
-              </span>
-            </a>
-          ))}
+                {lien ? (
+                  <span className="mt-[17px] block font-sans text-[13px] font-medium uppercase tracking-[0.1em] text-forest">
+                    {news.postCta} <span aria-hidden>→</span>
+                    <span className="sr-only"> (nouvelle fenêtre)</span>
+                  </span>
+                ) : null}
+              </div>
+            </Boite>
+            );
+          })}
         </Reveal>
       </div>
     </section>

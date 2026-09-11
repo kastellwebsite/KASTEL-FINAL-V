@@ -1,24 +1,22 @@
 import { cache } from "react";
 import * as fichier from "@/content/site";
-import { findPublicAsset } from "@/lib/asset";
-import { sanityClient } from "./client";
-import { imageUrl } from "./image";
+import { findPublicAsset, findPublicDocument } from "@/lib/asset";
+import { lireContenuWordPress } from "./client";
+import { isWordPressConfigured } from "./env";
 
 /**
- * Contenu du site, Sanity par-dessus les valeurs du dépôt.
+ * Contenu du site, WordPress par-dessus les valeurs du dépôt.
  *
- * La fusion se fait champ par champ : une fiche à moitié remplie dans le studio
- * ne vide jamais une rubrique, et si Sanity est injoignable le site sert ce
- * qu'il a. C'est ce qui permet de brancher le CMS progressivement.
+ * La fusion se fait champ par champ : une fiche à moitié remplie dans
+ * l'administration ne vide jamais une rubrique, et si WordPress est injoignable
+ * le site sert ce qu'il a. C'est ce qui permet de brancher le CMS
+ * progressivement — et ce qui garantit qu'une panne du back-office ne met pas
+ * le site public à terre.
+ *
+ * L'extension WordPress rend délibérément la même enveloppe que l'ancienne
+ * requête Sanity : les noms de champs ci-dessous sont le contrat entre les deux
+ * moitiés, et cette fonction n'a pas eu à changer lors de la bascule.
  */
-
-const REQUETE = `{
-  "parametres": *[_type == "parametres"][0],
-  "accueil": *[_type == "accueil"][0],
-  "offres": *[_type == "offres"][0],
-  "apropos": *[_type == "apropos"][0],
-  "piedDePage": *[_type == "piedDePage"][0]
-}`;
 
 /** Retient la valeur du CMS seulement si elle est réellement renseignée. */
 const ou = <T,>(cms: T | null | undefined, repli: T): T => {
@@ -30,6 +28,8 @@ const ou = <T,>(cms: T | null | undefined, repli: T): T => {
 
 type Doc = Record<string, unknown>;
 type Donnees = {
+  /** Date ISO de la fiche modifiée le plus récemment, toutes rubriques confondues. */
+  maj?: string;
   parametres?: Doc;
   accueil?: Doc;
   offres?: Doc;
@@ -69,6 +69,8 @@ function assembler(d: Donnees) {
     cta: string;
     /** Liste numérotée facultative, utilisée par le manifeste du RIT. */
     objectives?: readonly string[];
+    /** Photo de l'article, couverture du média, capture du post. */
+    image?: string | null;
   };
   const offresListe: Offre[] | undefined = (o.liste as Doc[] | undefined)?.map((item, i) => ({
     index: String(i + 1).padStart(2, "0"),
@@ -80,14 +82,33 @@ function assembler(d: Donnees) {
     caseStudy: (item.casPratique as { title: string; body: string } | null) ?? null,
   }));
 
+  /** Les visuels arrivent de WordPress en URL absolues : rien à construire. */
+  const visuel = (valeur: unknown): string | null =>
+    typeof valeur === "string" && valeur.length > 0 ? valeur : null;
+
+  /**
+   * Logo d'un client ou d'un média, avec repli sur le dépôt.
+   *
+   * La fusion se fait par liste : dès qu'une liste existe côté CMS, elle
+   * remplace celle du dépôt en entier. Sans ce repli, ajouter un client dans
+   * WordPress sans téléverser son logo ferait disparaître le fichier déjà
+   * présent dans le dépôt, et le nom s'afficherait en toutes lettres à sa
+   * place. On rattrape donc le fichier par le nom.
+   */
+  const logo = (nom: string, fourni: unknown, dossier: string): string | null =>
+    visuel(fourni) ?? findPublicAsset(`${dossier}/${slug(nom)}`);
+
   const presse = (ap.presse as Doc[] | undefined)?.map((item) => ({
     outlet: (item.media as string) ?? "",
     title: (item.titre as string) ?? "",
     href: (item.lien as string) ?? "#",
-    logoUrl: imageUrl(item.logo as never, 240),
+    logoUrl: logo((item.media as string) ?? "", item.logo, "brand/press"),
   }));
 
   return {
+    /* Date de la dernière modification côté WordPress, quand elle est connue :
+       c'est elle que le plan du site annonce aux moteurs. */
+    maj: typeof d.maj === "string" && d.maj ? d.maj : null,
     site: {
       ...fichier.site,
       name: ou(p.nom as string, fichier.site.name),
@@ -102,7 +123,7 @@ function assembler(d: Donnees) {
       promise: ou(a.promesse as string, fichier.hero.promise),
       cta: ou(a.herosCta as string, fichier.hero.cta),
       illustration:
-        imageUrl(a.herosVisuel as never, 1400) ?? "/brand/manifeste-carte.svg",
+        visuel(a.herosVisuel) ?? "/brand/manifeste-carte.svg",
     },
     vision: {
       eyebrow: ou(a.visionIntitule as string, fichier.vision.eyebrow),
@@ -144,7 +165,7 @@ function assembler(d: Donnees) {
       role: ou(ap.role as string, fichier.founder.role),
       bio: ou(ap.biographie as string[], fichier.founder.bio as readonly string[] as string[]),
       quote: ou(ap.citation as string, fichier.founder.quote),
-      photoUrl: imageUrl(ap.portrait as never, 900) ?? findPublicAsset("brand/fondatrice"),
+      photoUrl: visuel(ap.portrait) ?? findPublicAsset("brand/fondatrice"),
     },
     press: ou(
       presse,
@@ -160,12 +181,46 @@ function assembler(d: Donnees) {
         label: (item.categorie as string) ?? "",
         title: (item.titre as string) ?? "",
         context: (item.contexte as string) ?? "",
-        href: (item.lien as string) ?? "#",
+        /* Une section choisie l'emporte : c'est un choix explicite, là où le
+           champ d'adresse peut n'avoir jamais été vidé. */
+        href: ((item.destination as string) || (item.lien as string) || "#"),
         cta: (item.cta as string) ?? "En savoir plus",
         objectives: (item.objectifs as string[]) ?? undefined,
+        image: visuel(item.visuel),
       })),
       fichier.publications as readonly Publication[] as Publication[],
     ),
+    manifesto: {
+      ...fichier.manifesto,
+      eyebrow: ou(ap.manifesteIntitule as string, fichier.manifesto.eyebrow),
+      title: ou(ap.manifesteTitre as string, fichier.manifesto.title),
+      intro: ou(ap.manifesteIntro as string, fichier.manifesto.intro),
+      objectivesHeading: ou(
+        ap.manifesteObjectifsTitre as string,
+        fichier.manifesto.objectivesHeading,
+      ),
+      objectives: ou(
+        ap.manifesteObjectifs as string[],
+        fichier.manifesto.objectives as readonly string[] as string[],
+      ),
+      tags: ou(
+        ap.manifesteEtiquettes as string[],
+        fichier.manifesto.tags as readonly string[] as string[],
+      ),
+      cta: ou(ap.manifesteCta as string, fichier.manifesto.cta),
+      href: ou(ap.manifesteLien as string, fichier.manifesto.href),
+      coverUrl: visuel(ap.manifesteCouverture) ?? fichier.manifesto.coverUrl,
+      download: {
+        ...fichier.manifesto.download,
+        cta: ou(ap.manifesteTelechargerCta as string, fichier.manifesto.download.cta),
+        /* Le fichier du studio prime sur celui du dépôt ; sans l'un ni l'autre,
+           la chaîne reste vide et le bouton ne s'affiche pas. */
+        fileUrl:
+          ou(ap.manifesteFichier as string, "") ||
+          findPublicDocument(fichier.manifesto.download.file) ||
+          "",
+      },
+    },
     references: {
       ...fichier.references,
       eyebrow: ou(a.referencesIntitule as string, fichier.references.eyebrow),
@@ -174,11 +229,15 @@ function assembler(d: Donnees) {
     clients: ou(
       (a.clients as Doc[] | undefined)?.map((c) => ({
         name: (c.nom as string) ?? "",
-        logoUrl: imageUrl(c.logo as never, 320),
+        logoUrl: logo((c.nom as string) ?? "", c.logo, "brand"),
+        /* Le cran de marge est réglé fiche par fiche ; sans réglage, la
+           marge normale. */
+        logoSize: ((c.taille as string) || "normale") as string,
       })),
       fichier.clients.map((c) => ({
         name: c.name,
         logoUrl: findPublicAsset(c.file),
+        logoSize: "normale",
       })),
     ),
     testimonials: ou(
@@ -198,8 +257,15 @@ function assembler(d: Donnees) {
         date: (post.date as string) ?? "",
         excerpt: (post.extrait as string) ?? "",
         href: (post.lien as string) ?? "#",
+        image: visuel(post.visuel),
       })),
-      fichier.posts as readonly unknown[] as { date: string; excerpt: string; href: string }[],
+      fichier.posts.map((post) => ({
+        date: post.date,
+        excerpt: post.excerpt,
+        href: post.href,
+        /* Le dépôt ne porte pas de visuel : la carte retombe sur son aplat. */
+        image: null as string | null,
+      })),
     ),
     contact: {
       ...fichier.contact,
@@ -219,17 +285,13 @@ function assembler(d: Donnees) {
 export type Contenu = ReturnType<typeof assembler>;
 
 export const getContent = cache(async (): Promise<Contenu> => {
-  if (!sanityClient) return assembler({});
+  if (!isWordPressConfigured) return assembler({});
   try {
-    const data = await sanityClient.fetch<Donnees>(
-      REQUETE,
-      {},
-      { next: { revalidate: 60, tags: ["contenu"] } },
-    );
-    return assembler(data ?? {});
-  } catch (error) {
+    const donnees = await lireContenuWordPress<Donnees>();
+    return assembler(donnees ?? {});
+  } catch (erreur) {
     // Le site reste debout si le CMS tombe : on sert le contenu du dépôt.
-    console.error("[sanity] lecture impossible, repli sur le contenu du dépôt", error);
+    console.error("[wordpress] lecture impossible, repli sur le contenu du dépôt", erreur);
     return assembler({});
   }
 });

@@ -1,0 +1,190 @@
+{
+  "parametres": {
+    "nom": "Kastell Conseil",
+    "url": "https://kastell-conseils.fr",
+    "email": "contact@kastell-conseils.fr",
+    "ville": "Lamballe, Bretagne",
+    "linkedin": "#",
+    "linkedinProfil": "#",
+    "hatvp": ""
+  },
+  "accueil": {
+    "promesse": "Peser dans le débat public. Influencer les décisions. Où que vous soyez.",
+    "herosCta": "Découvrir nos offres",
+    "visionIntitule": "Notre vision",
+    "visionTitre": "« L'interface entre les entreprises ancrées dans les territoires et les lieux de décisions »",
+    "visionParagraphes": "L'économie française se construit dans les territoires. Les décisions structurantes qui en dessinent l'avenir se prennent ailleurs. Pendant longtemps, influencer la décision publique signifiait être à Paris ou à Bruxelles, héritage d'un modèle de décision centralisé.\nMais l'influence publique ne s'arrête pas au périphérique. À mesure que les centres de décision se diversifient, l'influence doit se rapprocher du terrain. Depuis les Côtes-d'Armor, Kastell crée un dialogue entre les lieux où naissent les projets et les lieux où se prennent les décisions.\nOù que vous soyez, Kastell met sa connaissance des réalités locales, du monde économique et des institutions publiques au service de vos enjeux d'influence : lever des obstacles législatifs et réglementaires qui freinent votre activité, accroître votre visibilité sur votre territoire et au-delà, renforcer votre ancrage et votre dialogue avec vos parties prenantes, obtenir des financements publics pour développer vos projets.\nParce que l'influence ne s'improvise pas, nous travaillons chaque enjeu avec méthode. Comprendre les agendas politiques, identifier les interlocuteurs clés, construire les bons arguments et inscrire un dialogue dans la durée : une approche exigeante, transparente et conforme aux règles applicables aux représentants d'intérêts.\nComprendre au plus près, conseiller avec expertise, agir pour une influence utile et responsable : trois principes qui guident chacune de nos missions.",
+    "referencesIntitule": "Références",
+    "referencesTitre": "Ils nous confient leurs enjeux publics",
+    "actualitesTitre": "Sur LinkedIn",
+    "actualitesCta": "Suivre Léa de Lamotte",
+    "contactIntitule": "Contact",
+    "contactTitre": "Parlons de vos enjeux.",
+    "contactIntro": "Un premier échange de trente minutes suffit souvent à clarifier une stratégie."
+  },
+  "offres": {
+    "intitule": "Offres",
+    "titrePage": "Six terrains d'intervention.",
+    "introPage": "Chaque mission part du même point : comprendre où se prend la décision, à quel moment, et par qui. Le reste — argumentaire, interlocuteurs, calendrier — en découle."
+  },
+  "apropos": {
+    "intitule": "Présidente fondatrice",
+    "nom": "Léa de Lamotte",
+    "role": "Conseil en affaires publiques · Lamballe · Paris · Bruxelles",
+    "biographie": "Formée au croisement de la décision publique, du plaidoyer environnemental et du conseil aux entreprises, Léa de Lamotte fonde Kastell Conseil avec une conviction : l'influence publique ne doit pas être réservée aux acteurs implantés dans les centres de décision.\nSon parcours, de l'Assemblée nationale au conseil stratégique en passant par le milieu des ONG, lui permet de croiser plusieurs expertises : compréhension de la fabrique de la loi, communication d'influence, ancrage territorial et intelligence économique.\nÀ travers Kastell, elle met son expertise au service de l'influence des entreprises et des acteurs économiques, avec une attention particulière portée à celles et ceux qui font vivre les territoires et portent les transformations de demain.\nElle intervient personnellement sur chaque mission, de la définition de la stratégie à la rencontre des décideurs.\nImplanté en Bretagne, Kastell revendique une autre manière de pratiquer les affaires publiques, depuis les régions : partir du terrain pour mieux comprendre les enjeux des acteurs économiques, tout en maîtrisant les lieux de pouvoir et les mécanismes de décision. Elle co-fonde en 2026 le réseau Influence & Territoires, premier réseau professionnel dédié aux professionnels des affaires publiques installés en régions.",
+    "citation": "« L'influence publique ne doit pas être réservée aux acteurs implantés dans les centres de décision. »",
+    "presseIntitule": "Dans la presse",
+    "publicationsIntitule": "Nos publications",
+    "manifesteIntitule": "Manifeste",
+    "manifesteTitre": "Réseau Influence & Territoires",
+    "manifesteIntro": "La décision publique reste très concentrée à Paris, créant une déconnexion avec les territoires où se déroule l'essentiel de l'activité économique et sociale. Plutôt que d'opposer Paris et les régions, le Réseau Influence & Territoires, collectif apartisan de consultants et de cabinets implantés en région, entend fluidifier le dialogue entre le niveau national et les réalités de terrain, pour rendre l'action publique plus efficace.",
+    "manifesteObjectifsTitre": "Quatre objectifs",
+    "manifesteObjectifs": "Valoriser l'expertise des professionnels des affaires publiques basés en territoires.\nStructurer la profession via le partage d'outils, de méthodes et de retours d'expérience.\nRendre l'offre lisible pour les acteurs économiques locaux : PME, ETI, fédérations.\nPorter une voix collective pour faire remonter les enjeux territoriaux dans les processus de décision nationaux.",
+    "manifesteEtiquettes": "Apartisan\nConsultants en région",
+    "manifesteCta": "Suivre le RIT sur LinkedIn",
+    "manifesteLien": "https://www.linkedin.com/company/115801577/",
+    "manifesteTelechargerCta": "Télécharger le manifeste"
+  },
+  "piedDePage": {
+    "accroche": "Conseil en affaires publiques, lobbying et communication d'influence. Lamballe, Bretagne.",
+    "copyright": "© 2026 Kastell Conseil",
+    "mention": "Représentant d'intérêts déclaré — HATVP"
+  },
+  "k_offre": [
+    {
+      "titre": "Lobbying institutionnel",
+      "resume": "Influencer les décisions publiques pour conquérir de nouveaux marchés et protéger vos activités.",
+      "ancre": "lobbying-institutionnel",
+      "prestations": "Suivi de l'activité politique, législative et réglementaire\nAnalyse et décryptage\nMapping de l'environnement institutionnel\nOrganisation de rendez-vous avec des décideurs politiques nationaux\nRédaction et négociation d'amendements et de propositions de loi",
+      "note": "",
+      "casPratiqueTitre": "",
+      "casPratiqueRecit": ""
+    },
+    {
+      "titre": "Ancrage territorial",
+      "resume": "Renforcer votre capacité d'influence au cœur des écosystèmes locaux.",
+      "ancre": "ancrage-territorial",
+      "prestations": "Veille et intelligence territoriale\nCréation de coalitions et animation de réseaux\nMise en relation avec des décideurs locaux\nOrganisation d'événements locaux",
+      "note": "",
+      "casPratiqueTitre": "",
+      "casPratiqueRecit": ""
+    },
+    {
+      "titre": "Aides et financements publics",
+      "resume": "Vous orienter dans le millefeuille administratif et mobiliser des aides et financements publics pour développer vos projets.",
+      "ancre": "aides-et-financements-publics",
+      "prestations": "Identification des aides et financements éligibles a priori pour votre projet\nConseil stratégique : positionnement, rendez-vous décideurs, messages\nPréparation et dépôt des demandes auprès des organismes identifiés\nSécurisation institutionnelle jusqu'à l'obtention des financements",
+      "note": "",
+      "casPratiqueTitre": "",
+      "casPratiqueRecit": ""
+    },
+    {
+      "titre": "Communication d'influence",
+      "resume": "Faire entendre votre voix et valoriser vos projets à impact dans une société exigeante à l'information abondante.",
+      "ancre": "communication-d-influence",
+      "prestations": "Analyse réputationnelle\nAnimation et structuration de réseaux\nNégociation d'interviews dans les médias\nRecherche de partenariats d'influence\nOrganisation d'événements",
+      "note": "",
+      "casPratiqueTitre": "",
+      "casPratiqueRecit": ""
+    },
+    {
+      "titre": "Audit stratégique d'affaires publiques",
+      "resume": "Trouver des leviers de compétitivité grâce à une stratégie d'affaires publiques efficace.",
+      "ancre": "audit-strategique",
+      "prestations": "Diagnostic interne et échange sur vos priorités\nAnalyse de l'environnement économique, juridique et politique dans lequel agir\nCartographie des parties prenantes et priorisation des publics\nIdentification des messages clés\nAnalyse des leviers d'action\nConstruction d'une feuille de route opérationnelle",
+      "note": "Formation animée sur un module d'une journée.",
+      "casPratiqueTitre": "",
+      "casPratiqueRecit": ""
+    },
+    {
+      "titre": "Communication de crise",
+      "resume": "Protéger votre réputation dans un environnement crisogène où la perception compte souvent autant que la performance.",
+      "ancre": "communication-de-crise",
+      "prestations": "Veille sectorielle et détection des signaux faibles\nOrganisation et animation d'une cellule de crise\nMise en œuvre de la stratégie : matrices, procédures\nÉlaboration des messages clés\nGestion des relations presse de crise\nMedia training",
+      "note": "",
+      "casPratiqueTitre": "",
+      "casPratiqueRecit": ""
+    }
+  ],
+  "k_chiffre": [
+    {
+      "valeur": "10 ans",
+      "libelle": "d'expérience institutionnelle"
+    },
+    {
+      "valeur": "Lamballe",
+      "libelle": "Paris · Bruxelles"
+    }
+  ],
+  "k_client": [
+    {
+      "nom": "Ville de Rennes"
+    },
+    {
+      "nom": "Région Bretagne"
+    },
+    {
+      "nom": "Breizh Cola"
+    },
+    {
+      "nom": "NDC"
+    },
+    {
+      "nom": "Google"
+    }
+  ],
+  "k_temoignage": [
+    {
+      "auteur": "Nom · fonction, organisation",
+      "citation": "« Un accompagnement précis, qui connaît les circuits de décision et sait quand intervenir. »"
+    },
+    {
+      "auteur": "Nom · fonction, organisation",
+      "citation": "« Une lecture du territoire breton que peu de cabinets parisiens peuvent offrir. »"
+    }
+  ],
+  "k_post": [
+    {
+      "date": "12 août 2026",
+      "extrait": "Loi d’accélération des énergies renouvelables : ce que change le dernier décret pour les porteurs de projets en Bretagne…",
+      "lien": "#"
+    },
+    {
+      "date": "29 juillet 2026",
+      "extrait": "Retour sur la table ronde « Eau et industrie agroalimentaire » organisée avec les acteurs du bassin rennais…",
+      "lien": "#"
+    },
+    {
+      "date": "8 juillet 2026",
+      "extrait": "Budget régional 2027 : trois arbitrages à suivre pour les filières de la mer et du littoral breton…",
+      "lien": "#"
+    }
+  ],
+  "k_presse": [
+    {
+      "titre": "Elle crée le premier cabinet d'affaires publiques dans le pays de Lamballe",
+      "media": "Ouest-France",
+      "lien": "https://www.ouest-france.fr/economie/entreprises/elle-cree-le-premier-cabinet-daffaires-publiques-dans-le-pays-de-lamballe-841a2d3a-a91d-11f0-a84e-0a4f72002724"
+    },
+    {
+      "titre": "Léa de Lamotte crée Kastell Conseil, spécialisé dans le lobbying engagé et les affaires publiques",
+      "media": "Bretagne Économique",
+      "lien": "https://www.bretagne-economique.com/actualites/lea-de-lamotte-cree-kastell-conseil-specialise-dans-le-lobbying-engage-et-les-affaires-publiques/"
+    },
+    {
+      "titre": "Léa de Lamotte, entrepreneure engagée au service des territoires bretons",
+      "media": "Femmes de Bretagne",
+      "lien": "https://www.femmesdebretagne.fr/articles/197488-lea-de-lamotte-entrepreneure-engagee-au-service-des-territoires-bretons"
+    }
+  ],
+  "k_publication": [
+    {
+      "titre": "[ Titre de la tribune ]",
+      "categorie": "Tribune",
+      "contexte": "Parue en presse écrite — [ média ], début 2026",
+      "lien": "https://www.linkedin.com/feed/update/urn:li:activity:7427385529794527232/",
+      "cta": "Voir le post LinkedIn",
+      "objectifs": ""
+    }
+  ]
+}

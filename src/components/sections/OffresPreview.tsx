@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
-import { getContent } from "@/sanity/content";
+import { getContent } from "@/cms/content";
 
 export async function OffresPreview() {
   const { offers, offersSection } = await getContent();

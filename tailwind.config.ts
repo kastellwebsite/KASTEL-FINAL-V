@@ -14,19 +14,24 @@ const config: Config = {
         graphite: "#2F3835",
         slate: "#2B322F",
         stone: "#4A5350",
-        sage: "#4B7662",
+        sage: "#35752B",
         mist: "#8FAFAE",
         frost: "#B8CFCE",
         ice: "#E2F0F8",
         /*
-         * Vert clair de la charte. Trois rôles distincts, chacun vérifié :
-         *  accent      décoratif, et lisible sur le vert foncé (6,42:1)
-         *  sage        le plus clair passant AA en texte sur fond clair
-         *  accent-tint fond de bande, texte forêt à 13,6:1
+         * Vert pousse. Trois rôles distincts, chacun vérifié :
+         *  accent      décoratif, et lisible sur le vert foncé (6,90:1)
+         *  sage        vert de texte, ≥ 4,91:1 sur les trois fonds clairs
+         *  accent-tint fond de bande, texte forêt à 13,93:1
+         *
+         * La teinte et la saturation sont posées, la clarté est cherchée :
+         * un vert plus vif est plus proche du fond clair, et la saturation
+         * coûte donc du contraste. Chercher la clarté plutôt que la choisir
+         * donne le vert le plus lumineux qui tienne encore le seuil.
          */
-        accent: "#8BB19F",
-        "accent-tint": "#EEF4F1",
-        "accent-line": "rgba(139,177,159,0.5)",
+        accent: "#73C167",
+        "accent-tint": "#F1F7F0",
+        "accent-line": "rgba(115,193,103,0.5)",
         muted: "#666F6C",
         dim: "#707876",
       },
