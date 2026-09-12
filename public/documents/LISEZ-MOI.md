@@ -14,9 +14,11 @@ WordPress prend alors le pas sur celui du dépôt.
 
 ## Où partent les adresses e-mail
 
-Le formulaire poste sur `/api/manifeste`, qui relaie l'adresse vers l'URL
+Le formulaire poste sur `/api/manifeste`, qui signale chaque adresse au
+cabinet par courriel (« untel@… a téléchargé le manifeste »), par le même
+service que le formulaire de contact. Elle peut aussi être relayée vers l'URL
 configurée dans la variable d'environnement `MANIFESTE_WEBHOOK_URL` (Zapier,
-Make, Brevo, n8n — n'importe quel service acceptant un POST JSON). Sans cette
-variable, l'adresse est seulement écrite dans les journaux du serveur et le
+Make, n8n — n'importe quel service acceptant un POST JSON). Sans courriel ni
+webhook, l'adresse est seulement écrite dans les journaux du serveur et le
 document est tout de même servi : le formulaire ne bloque jamais un visiteur
 parce qu'une intégration manque.

@@ -288,15 +288,18 @@ focus, la touche Échap, l'inertie de l'arrière-plan et le retour du focus sur 
 bouton d'ouverture, ce qu'une réimplémentation manuelle rate presque toujours.
 
 `POST /api/manifeste` valide l'adresse, exige le consentement, écarte les robots
-par un champ leurre, limite le débit par IP, puis relaie l'adresse vers
+par un champ leurre, limite le débit par IP, puis **signale l'adresse au cabinet
+par courriel** dès qu'un service d'envoi est configuré (le même que le
+formulaire de contact) : objet « untel@… a téléchargé le manifeste », adresse du
+visiteur en champ de réponse. Elle peut aussi être relayée vers
 `MANIFESTE_WEBHOOK_URL` — n'importe quel service acceptant un POST JSON
-(Zapier, Make, Brevo, n8n). Charge utile :
+(Zapier, Make, n8n) — pour la ranger dans un tableur ou une liste. Charge utile :
 
 ```json
 { "email": "…", "document": "Manifeste Réseau Influence & Territoires", "date": "…" }
 ```
 
-Sans cette variable d'environnement, l'adresse est seulement journalisée et le
+Sans courriel ni webhook, l'adresse est seulement journalisée et le
 document est servi quand même : une intégration absente ne prive jamais un
 visiteur du document, et le relais en panne non plus.
 

@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import { getContent } from "@/cms/content";
+import { site } from "@/content/site";
+import { courrielConfigure, envoyerCourriel } from "@/lib/courriel";
 
 /**
  * Téléchargement du manifeste contre adresse e-mail.
  *
- * L'adresse est relayée vers MANIFESTE_WEBHOOK_URL (Zapier, Make, Brevo, n8n :
- * tout service acceptant un POST JSON). Si la variable n'est pas configurée,
- * l'adresse est journalisée et le document est servi quand même — une
- * intégration manquante ne doit pas priver un visiteur du document.
+ * Chaque adresse est signalée au cabinet par courriel, dès qu'un service
+ * d'envoi est configuré : « untel@… a téléchargé le manifeste ». Elle peut
+ * aussi être relayée vers MANIFESTE_WEBHOOK_URL (Zapier, Make, n8n : tout
+ * service acceptant un POST JSON), pour qui veut la ranger dans un tableur ou
+ * une liste. Sans l'un ni l'autre, l'adresse est journalisée et le document
+ * est servi quand même — une intégration manquante ne doit pas priver un
+ * visiteur du document, et son échec non plus.
  *
  * Le fichier lui-même est servi par /api/manifeste/fichier, sans contrôle :
  * l'adresse une fois connue, elle est publique. C'est le compromis habituel de
@@ -78,26 +83,52 @@ export async function POST(request: Request) {
      permet au navigateur d'honorer le téléchargement. */
   const url = "/api/manifeste/fichier";
 
+  const adresse = email.trim().toLowerCase();
+  const document = "Manifeste Réseau Influence & Territoires";
+  const date = new Date();
+
+  /* Le visiteur a fait sa part : il repart avec le document même si le
+     courriel ou le service en aval échouent. D'où le try par relais, et la
+     réponse rendue quoi qu'il arrive. */
+  let signale = false;
+
+  if (courrielConfigure()) {
+    const envoi = await envoyerCourriel({
+      destinataire: process.env.CONTACT_DESTINATAIRE || site.email,
+      sujet: `${adresse} a téléchargé le manifeste`,
+      /* L'adresse du visiteur en réponse : un clic suffit pour engager la
+         conversation avec quelqu'un qui vient de lire le manifeste. */
+      repondreA: { email: adresse },
+      texte: [
+        `${adresse} vient de télécharger le manifeste présent sur le site.`,
+        "",
+        `Document : ${document}`,
+        `Date : ${date.toLocaleString("fr-FR", { timeZone: "Europe/Paris" })}`,
+        "",
+        "—",
+        "Envoyé depuis le formulaire de téléchargement du manifeste.",
+      ].join("\n"),
+    });
+    if (envoi.etat === "envoye") signale = true;
+    else if (envoi.etat === "echec") console.error("[manifeste] courriel non envoyé", envoi.detail);
+  }
+
   const webhook = process.env.MANIFESTE_WEBHOOK_URL;
   if (webhook) {
     try {
       await fetch(webhook, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          document: "Manifeste Réseau Influence & Territoires",
-          date: new Date().toISOString(),
-        }),
+        body: JSON.stringify({ email: adresse, document, date: date.toISOString() }),
+        signal: AbortSignal.timeout(10_000),
       });
+      signale = true;
     } catch (erreur) {
-      // Le visiteur a fait sa part : il repart avec le document même si le
-      // service en aval est indisponible.
       console.error("[manifeste] relais impossible", erreur);
     }
-  } else {
-    console.info("[manifeste] demande de", email.trim().toLowerCase());
   }
+
+  if (!signale) console.info("[manifeste] demande de", adresse);
 
   return NextResponse.json({ url });
 }
