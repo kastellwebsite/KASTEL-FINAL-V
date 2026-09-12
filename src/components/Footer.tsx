@@ -61,9 +61,11 @@ export async function Footer() {
 
           <div className="flex flex-col gap-[26px] min-[860px]:gap-[18px]">
             <p className={headingClass}>{footer.contactHeading}</p>
-            <a href={`mailto:${site.email}`} className={linkClass}>
-              {site.email}
-            </a>
+            {/* Adresse en texte, non cliquable, à la demande du cabinet : un
+                lien « mailto » ouvre un logiciel de messagerie que la plupart
+                des visiteurs n'ont pas configuré. Le formulaire de contact
+                reste la voie d'entrée. */}
+            <p className="m-0 text-[15px]">{site.email}</p>
             {/* Ville seule ici, à la demande du cabinet : l'adresse complète
                 et le téléphone restent sur la page Contact, dans les mentions
                 légales et dans les données structurées, où un moteur les
