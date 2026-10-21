@@ -9,6 +9,7 @@ import { OffresPreview } from "@/components/sections/OffresPreview";
 import { News } from "@/components/sections/News";
 import { References } from "@/components/sections/References";
 import { site } from "@/content/site";
+import { getContent } from "@/cms/content";
 import type { Metadata } from "next";
 import { DonneesStructurees } from "@/components/DonneesStructurees";
 import { organisation, personneFondatrice, siteWeb } from "@/lib/schema";
@@ -31,12 +32,13 @@ export const metadata: Metadata = {
  */
 export const revalidate = 60;
 
-export default function Home() {
+export default async function Home() {
+  const { hero } = await getContent();
   return (
     <div className="w-full overflow-x-clip">
       {/* L'identité du cabinet, en clair pour les machines. */}
       <DonneesStructurees
-        noeuds={[organisation(), siteWeb(), personneFondatrice()]}
+        noeuds={[organisation(hero.presentation), siteWeb(), personneFondatrice()]}
       />
       <Header />
       <main id="contenu">

@@ -121,6 +121,7 @@ function assembler(d: Donnees) {
     },
     hero: {
       promise: ou(a.promesse as string, fichier.hero.promise),
+      presentation: ou(a.herosPresentation as string, fichier.hero.presentation as string),
       cta: ou(a.herosCta as string, fichier.hero.cta),
       illustration:
         visuel(a.herosVisuel) ?? "/brand/manifeste-carte.svg",

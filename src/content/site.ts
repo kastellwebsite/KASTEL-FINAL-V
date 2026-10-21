@@ -1,4 +1,4 @@
-import { urlSite } from "@/lib/seo";
+import { phraseEntite, urlSite } from "@/lib/seo";
 
 export const site = {
   name: "Kastell Conseil",
@@ -27,6 +27,8 @@ export const hero = {
   /** Le mot-symbole porte le nom : ce titre est la promesse seule. */
   promise:
     "Peser dans le débat public. Influencer les décisions. Où que vous soyez.",
+  /** Phrase sous la promesse : par défaut, la phrase d'entité. */
+  presentation: phraseEntite,
   cta: "Découvrir nos offres",
 } as const;
 
