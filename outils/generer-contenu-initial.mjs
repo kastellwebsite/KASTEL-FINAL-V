@@ -38,6 +38,7 @@ const contenu = {
   },
   accueil: {
     promesse: c.hero.promise,
+    herosPresentation: c.hero.presentation,
     herosCta: c.hero.cta,
     visionIntitule: c.vision.eyebrow,
     visionTitre: c.vision.title,

@@ -1,5 +1,5 @@
 import { getContent } from "@/cms/content";
-import { entite, estProduction, phraseEntite, urlSite } from "@/lib/seo";
+import { entite, estProduction, urlSite } from "@/lib/seo";
 
 /**
  * Fiche d'identité du cabinet, à l'usage des moteurs génératifs.
@@ -22,13 +22,13 @@ export async function GET() {
     return new Response("", { status: 404 });
   }
 
-  const { offers, founder, press, maj } = await getContent();
+  const { hero, offers, founder, press, maj } = await getContent();
   const date = (maj ? new Date(maj) : new Date()).toISOString().slice(0, 10);
 
   const lignes = [
     `# ${entite.nom}`,
     "",
-    `> ${phraseEntite}`,
+    `> ${hero.presentation}`,
     "",
     `Dernière mise à jour : ${date}`,
     "",

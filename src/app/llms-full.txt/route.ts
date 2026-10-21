@@ -1,6 +1,6 @@
 import { getContent } from "@/cms/content";
 import { lobbying } from "@/content/site";
-import { entite, estProduction, phraseEntite, urlSite } from "@/lib/seo";
+import { entite, estProduction, urlSite } from "@/lib/seo";
 
 /**
  * Texte intégral du site, en une seule page sans mise en forme.
@@ -25,14 +25,14 @@ export async function GET() {
   }
 
   const contenu = await getContent();
-  const { vision, offers, founder, references, manifesto, press, publications, contact, maj } =
+  const { hero, vision, offers, founder, references, manifesto, press, publications, contact, maj } =
     contenu;
   const date = (maj ? new Date(maj) : new Date()).toISOString().slice(0, 10);
 
   const lignes: string[] = [
     `# ${entite.nom} — texte intégral du site`,
     "",
-    `> ${phraseEntite}`,
+    `> ${hero.presentation}`,
     "",
     `Source : ${urlSite} · Dernière mise à jour : ${date}`,
     "",

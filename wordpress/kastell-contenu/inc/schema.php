@@ -41,6 +41,7 @@ function kastell_singletons() {
 			'aide'   => 'Les textes de la page d’accueil, dans l’ordre où ils apparaissent : la promesse en haut de page, la section « Notre vision », puis les intitulés des sections suivantes. Les logos clients, témoignages, chiffres et actualités se gèrent dans leurs propres rubriques.',
 			'champs' => array(
 				'promesse'           => array( 'texte', 'Promesse (héros)' ),
+				'herosPresentation'  => array( 'paragraphe', 'Phrase de présentation (héros)', 'La phrase sous la promesse. C’est aussi la description du cabinet lue par Google et les moteurs génératifs : dire ce qu’est Kastell et où il intervient. Laisser vide garde la phrase d’origine.' ),
 				'herosCta'           => array( 'texte', 'Libellé du bouton du héros' ),
 				'herosVisuel'        => array( 'image', 'Illustration du héros', 'Laisser vide pour garder le motif cartographique fourni.' ),
 				'visionIntitule'     => array( 'texte', 'Notre vision — intitulé de section' ),

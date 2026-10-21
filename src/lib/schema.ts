@@ -50,7 +50,7 @@ const zonesServies = (): Noeud[] =>
  * `ProfessionalService` comme prestataire local — c'est ce second qui ouvre le
  * référencement local, avec adresse, horaires et zone.
  */
-export const organisation = (): Noeud => ({
+export const organisation = (description: string = phraseEntite): Noeud => ({
   "@type": ["Organization", "ProfessionalService"],
   "@id": ID.organisation,
   name: entite.nom,
@@ -59,7 +59,7 @@ export const organisation = (): Noeud => ({
   url: entite.url,
   logo: { "@type": "ImageObject", url: entite.logo },
   image: absolu("/opengraph-image.png"),
-  description: phraseEntite,
+  description,
   slogan: "Ancrage territorial, influence nationale",
   email: entite.email,
   telephone: entite.telephone,

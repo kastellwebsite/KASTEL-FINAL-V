@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/Reveal";
 import { getContent } from "@/cms/content";
-import { phraseEntite } from "@/lib/seo";
 
 export async function Hero() {
   const { hero } = await getContent();
@@ -41,13 +40,13 @@ export async function Hero() {
             />
             <h1 className="h1">{hero.promise}</h1>
             {/* Phrase d'entité, mot pour mot celle des données structurées et
-                de llms.txt. Elle dit en clair ce que le site ne disait nulle
+                de llms.txt — modifiable depuis WordPress, fiche Accueil. Elle dit en clair ce que le site ne disait nulle
                 part : ce qu'est Kastell, et où. Un moteur génératif qui la
                 rencontre trois fois à l'identique la reprend ; trois
                 formulations voisines le laissent choisir. Elle sert aussi le
                 visiteur, à qui la promesse seule n'apprenait pas le métier. */}
             <p className="m-0 mt-[clamp(18px,2.4vw,28px)] max-w-[58ch] font-sans text-[clamp(15px,1.25vw,18px)] leading-[1.65] text-stone">
-              {phraseEntite}
+              {hero.presentation}
             </p>
           </Reveal>
           <Reveal immediat className="reveal-hero-cta mt-[clamp(30px,4vw,48px)]">
